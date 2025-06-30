@@ -1,17 +1,50 @@
-import React from "react";
-import { Input } from "antd";
-// import { useAuthStore } from "../firebase/store/authStore";
+import { Link } from "react-router-dom";
 
-const Header = () => {
+function Header() {
   return (
-    <header className="flex justify-between p-2 mb-5 border-b-1 border-gray-300">
-      <div className="flex gap-6">
-        <div className="text-3xl font-bold">StoryHub</div>
-        <Input placeholder="Поиск" />
-      </div>
-      <div className="rounded-xl bg-gray-400">Profile</div>
+    <header className="bg-blue-600 text-white p-4">
+      <nav className="container mx-auto flex justify-between">
+        <h1 className="text-xl font-bold">StoryHub</h1>
+        <ul className="flex space-x-4">
+          <li>
+            <Link to="/" className="hover:underline">
+              Главная
+            </Link>
+          </li>
+          <li>
+            <Link to="/posts" className="hover:underline">
+              Посты
+            </Link>
+          </li>
+          <li>
+            <Link to="/about" className="hover:underline">
+              О нас
+            </Link>
+          </li>
+          <li>
+            <Link to="/login" className="hover:underline">
+              Вход
+            </Link>
+          </li>
+          <li>
+            <Link to="/signup" className="hover:underline">
+              Регистрация
+            </Link>
+          </li>
+          <li>
+            <Link to="/profile" className="hover:underline">
+              Профиль
+            </Link>
+          </li>
+          <li>
+            <Link to="/create-post" className="hover:underline">
+              Создать пост
+            </Link>
+          </li>
+        </ul>
+      </nav>
     </header>
   );
-};
+}
 
 export default Header;
