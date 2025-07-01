@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 function Header() {
   return (
-    <header className="bg-blue-600 text-white p-4">
+    <header className="bg-red-600 text-white p-4">
       <nav className="container mx-auto flex justify-between">
         <h1 className="text-xl font-bold">StoryHub</h1>
         <ul className="flex space-x-4">
