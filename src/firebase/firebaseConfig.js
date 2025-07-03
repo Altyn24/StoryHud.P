@@ -11,7 +11,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyA7Tg0NQ3wm_Gk-EphhvsS4fwO17Y_Kh80",
   authDomain: "storyhub-f59aa.firebaseapp.com",
   projectId: "storyhub-f59aa",
-  storageBucket: "storyhub-f59aa.firebasestorage.app",
+  storageBucket: "storyhub-f59aa.firebasestorage.com",
   messagingSenderId: "387643874885",
   appId: "1:387643874885:web:7bb36a028054bd5c518d2c",
   measurementId: "G-01F6GB2W05",
@@ -19,6 +19,6 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-export const analytics = getAnalytics(app);
 export const auth = getAuth(app);
+export const analytics = getAnalytics(app);
 export default app;
