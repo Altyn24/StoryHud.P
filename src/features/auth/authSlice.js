@@ -25,16 +25,29 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(createUser.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    });
-    builder.addCase(createUser.fulfilled, (state) => {
-      state.loading = false;
-    });
-    // builder.addCase(createSlice.rejected, (state, action)=>{
-    //   state.error = action.payload
-    // }) 
+    builder
+      .addCase(createUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createUser.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(createUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(loginUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loginUser.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 

@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { createUser } from "../../features/auth/registerTC";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -15,6 +16,7 @@ const SignUp = () => {
       return;
     }
     dispatch(createUser({ email, password }));
+    navigate("/");
   };
 
   return (
@@ -41,7 +43,10 @@ const SignUp = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit" className="w-full text-white p-3 rounded">
+          <button
+            type="submit"
+            className="w-full text-white p-3 rounded bg-red-600"
+          >
             Зарегистрироваться
           </button>
         </form>
