@@ -45,7 +45,7 @@ const SignUp = () => {
           />
           <button
             type="submit"
-            className="w-full text-white p-3 rounded bg-red-600"
+            className="w-full p-3 rounded-2xl border-3 border-red-600 hover:bg-red-500 hover:text-white"
           >
             Зарегистрироваться
           </button>

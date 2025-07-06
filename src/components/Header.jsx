@@ -13,7 +13,7 @@ function Header() {
   return (
     <div className="p-3 w-full max-w-screen-xl border-b-4 border-[#CC2E2E] mb-3">
       <header className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">StoryHub</h1>
+        <Link to="/" className="text-2xl font-bold">StoryHub</Link>
 
         <div className="flex flex-col w-[260px]">
           <label htmlFor="search" className="text-sm mb-1">
