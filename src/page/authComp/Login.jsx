@@ -12,11 +12,26 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (password.length < 6) {
       return alert("Пароль слишком короткий");
     }
+
     const resultAction = await dispatch(loginUser({ email, password }));
-    if (loginUser.fulfilled.match(resultAction)) navigate("/profile");
+
+    if (loginUser.fulfilled.match(resultAction)) {
+      const user = resultAction.payload;
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          uid: user.uid,
+          name: user.displayName || "Без имени",
+          email: user.email,
+        })
+      );
+
+      navigate("/profile");
+    }
   };
 
   return (

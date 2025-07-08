@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { logoutUser } from "../features/auth/logoutTC";
 import { useDispatch, useSelector } from "react-redux";
 
+
 function Header() {
   const isAuth = useSelector((state) => state.auth.isAuth);
   const dispatch = useDispatch();

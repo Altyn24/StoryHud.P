@@ -1,36 +1,81 @@
-import Item from "antd/es/list/Item";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { db } from "../firebase/firebaseConfig";
+import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
+import { Link, useNavigate } from "react-router-dom";
 
 const Profile = () => {
-  const { home, setHome } = useState();
+  const user = useSelector((state) => state.auth.user);
+  const [stories, setStories] = useState([]);
+  const navigate = useNavigate();
 
-  const button = ["Home", "About"];
+  useEffect(() => {
+    const fetchStories = async () => {
+      if (!user) return;
+
+      const q = query(
+        collection(db, "stories"),
+        where("authorId", "==", user.uid),
+        orderBy("createdAt", "desc")
+      );
+
+      const snapshot = await getDocs(q);
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      setStories(data);
+    };
+
+    fetchStories();
+  }, [user]);
+
+  if (!user) {
+    return <div className="text-center mt-20 text-gray-500">Загрузка профиля...</div>;
+  }
 
   return (
-    <div className="max-w-screen h-screen justify-items-center">
-      <div className="border-b-2 border-gray-300 w-[670px] mb-5">
-        <div className="flex justify-between">
-          <h1 className="text-4xl">Name: name</h1>
-          <span className="text-5xl">...</span>
+    <div className="max-w-3xl mx-auto px-4 py-10">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">Привет, {user.name || "Писатель"}!</h1>
+        <button
+          onClick={() => navigate("/create")}
+          className="bg-blue-600 !text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          + Новая история
+        </button>
+      </div>
+
+      <h2 className="text-xl font-semibold mb-4">Мои публикации</h2>
+
+      {stories.length === 0 ? (
+        <div className="bg-gray-100 p-6 rounded text-center text-gray-600">
+          <p>У вас пока нет публикаций.</p>
+          <button
+            onClick={() => navigate("/create")}
+            className="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          >
+            Написать историю
+          </button>
         </div>
-        <div className="flex gap-5">
-          {button.map((item) => (
-            <p
-              key={item}
-              onClick={() => setHome(item)}
-              className="hover:underline"
-            >
-              {item}
-            </p>
+      ) : (
+        <div className="space-y-4">
+          {stories.map((story) => (
+            <div key={story.id} className="bg-white shadow p-4 rounded">
+              <Link
+                to={`/story/${story.id}`}
+                className="text-xl font-semibold text-blue-600 hover:underline"
+              >
+                {story.title}
+              </Link>
+              <p className="text-sm text-gray-500">
+                Опубликовано: {story.createdAt?.toDate().toLocaleDateString() || "Неизвестно"}
+              </p>
+            </div>
           ))}
         </div>
-      </div>
-      <div className="text-2xl">
-        Reading List
-        <div className="bg-gray-200 ">
-          <p>Список историй</p>
-        </div>
-      </div>
+      )}
     </div>
   );
 };

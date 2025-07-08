@@ -8,20 +8,23 @@ import Login from "./page/authComp/Login";
 import NotFound from "./page/NotFound";
 import Profile from "./page/Profile";
 import ResetPassword from "./page/authComp/ResetPasword";
+import AuthProvider from "./page/authComp/AuthProvider";
+import CreateStory from "./page/CreateStory";
 
 function App() {
   return (
-    <>
+    <AuthProvider>
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/create" element={<CreateStory/>}/>
         <Route path="/reset-password" element={<ResetPassword/>}/>
         <Route path='*' element={<NotFound/>}/>
       </Routes>
-    </>
+    </AuthProvider>
   );
 }
 
