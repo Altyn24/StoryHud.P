@@ -15,7 +15,7 @@ const CreateStory = () => {
   const [success, setSuccess] = useState(false);
   const [showTools, setShowTools] = useState(false);
   const textareaRef = useRef(null);
-
+ 
   useEffect(() => {
     const savedDraft = localStorage.getItem(DRAFT_KEY);
     if (savedDraft) {
