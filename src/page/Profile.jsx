@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const user = useSelector((state) => state.auth.user);
+
   const [stories, setStories] = useState([]);
   const navigate = useNavigate();
 
