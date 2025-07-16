@@ -4,6 +4,8 @@ import { createUser } from "../../features/auth/registerTC";
 import { Link, useNavigate } from "react-router-dom";
 
 const SignUp = () => {
+  const [name, setName] = useState("");
+  const [avatar, setAvatar] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
@@ -15,7 +17,7 @@ const SignUp = () => {
       alert("Пароль должен быть больше 6 символов");
       return;
     }
-    dispatch(createUser({ email, password }));
+    dispatch(createUser({ name, email, password }));
     navigate("/");
   };
 
@@ -27,6 +29,19 @@ const SignUp = () => {
         </h1>
         <p className="text-center text-gray-600 mb-6">Создайть аккаунт</p>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="text"
+            placeholder="Имя"
+            className="w-full p-3 border border-gray-300 rounded"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+          <input
+  type="file"
+  accept="image/*"
+  onChange={(e) => setAvatar(e.target.files[0])}
+/>
           <input
             type="email"
             placeholder="Email"

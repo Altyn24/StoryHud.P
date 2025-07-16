@@ -25,19 +25,18 @@ const TextEditorTools = ({
   };
 
   const insertDivider = () => {
-    const divider = `\n\n<p style="text-align: center;">⋯ ⋯ ⋯</p>\n\n`;
-    const plainDivider = `\n\n. . .\n\n`;
+    const plainDivider = `\n\n⋯ ⋯ ⋯\n\n`;
     insertAtCursor(plainDivider);
   };
 
   return (
-    <div className="absolute left-[-50px] top-2 z-10">
+    <div className="absolute left-[-60px] top-2 z-10">
       <button
         type="button"
         onClick={() => setShowTools(!showTools)}
         className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition"
       >
-        <svg
+         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"

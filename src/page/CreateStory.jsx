@@ -15,7 +15,7 @@ const CreateStory = () => {
   const [success, setSuccess] = useState(false);
   const [showTools, setShowTools] = useState(false);
   const textareaRef = useRef(null);
- 
+
   useEffect(() => {
     const savedDraft = localStorage.getItem(DRAFT_KEY);
     if (savedDraft) {
@@ -89,7 +89,12 @@ const CreateStory = () => {
             placeholder="Название"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-100 border-b p-2 text-xl outline-none"
+            style={{
+              width: "100%",
+              fontSize: "2rem",
+              fontWeight: "800",
+              outline: "none",
+            }}
           />
         </div>
         <div className="relative">

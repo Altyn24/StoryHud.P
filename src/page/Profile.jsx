@@ -33,19 +33,22 @@ const Profile = () => {
   }, [user]);
 
   if (!user) {
-    return <div className="text-center mt-20 text-gray-500">Загрузка профиля...</div>;
+    return (
+      <div className="text-center mt-20 text-gray-500">Загрузка профиля...</div>
+    );
   }
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Привет, {user.name || "Писатель"}!</h1>
-        <button
-          onClick={() => navigate("/create")}
-          className="bg-blue-600 !text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          + Новая история
-        </button>
+        <h1 className="text-3xl font-bold">
+          Привет, {user?.name || "Писатель"}!
+        </h1>
+        <img
+          src={user?.photoURL || "https://via.placeholder.com/100"}
+          alt="avatar"
+          className="w-20 h-20 rounded-full object-cover mb-4"
+        />
       </div>
 
       <h2 className="text-xl font-semibold mb-4">Мои публикации</h2>
@@ -71,7 +74,8 @@ const Profile = () => {
                 {story.title}
               </Link>
               <p className="text-sm text-gray-500">
-                Опубликовано: {story.createdAt?.toDate().toLocaleDateString() || "Неизвестно"}
+                Опубликовано:{" "}
+                {story.createdAt?.toDate().toLocaleDateString() || "Неизвестно"}
               </p>
             </div>
           ))}
