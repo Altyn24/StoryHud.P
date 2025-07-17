@@ -55,7 +55,7 @@ function Header() {
           </div>
           
           <div className="flex items-center gap-8">
-            <Link to="/create-post" className="text-gray-500 flex items-center">
+            <Link to="/create" className="text-gray-500 flex items-center">
               <label>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
