@@ -4,12 +4,7 @@ function Home() {
       <p className="text-lg">
         Это место, где вы можете делиться своими историями и вдохновлять других.
       </p>
-      <a
-        href="/create-post"
-        className="mt-4 inline-block bg-black text-white px-4 py-2 rounded"
-      >
-        Написать историю
-      </a>
+      
     </main>
   );
 }

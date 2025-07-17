@@ -1,16 +1,23 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "../../firebase/firebaseConfig";
 import { setUser } from "./authSlice";
 import { message } from "antd";
 
 export const createUser = createAsyncThunk(
   "auth/createUser",
-  async ({ email, password }, { dispatch, rejectWithValue }) => {
+  async ({ name, email, password }, { dispatch, rejectWithValue }) => {
     try {
+      // Создание пользователя
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-
       const user = userCredential.user;
+
+      // Установка имени (displayName) в Firebase
+      await updateProfile(user, {
+        displayName: name,
+      });
+
+      // Обновлённый user уже содержит displayName
       dispatch(
         setUser({
           uid: user.uid,
