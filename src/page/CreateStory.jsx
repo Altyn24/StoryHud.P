@@ -72,8 +72,8 @@ const CreateStory = () => {
         onSubmit={handleSubmit}
         className="max-w-6xl mx-auto p-4 flex flex-col gap-8"
       >
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold">Создать историю</h2>
+        <div className="flex justify-end">
+          {/* <h2 className="text-2xl font-bold">Создать историю</h2> */}
           <button
             type="button"
             onClick={handleClearDraft}

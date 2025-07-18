@@ -38,10 +38,10 @@ const SignUp = () => {
             required
           />
           <input
-  type="file"
-  accept="image/*"
-  onChange={(e) => setAvatar(e.target.files[0])}
-/>
+            type="file"
+            accept="image/*"
+            onChange={(e) => setAvatar(e.target.files[0])}
+          />
           <input
             type="email"
             placeholder="Email"

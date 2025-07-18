@@ -30,7 +30,7 @@ const TextEditorTools = ({
   };
 
   return (
-    <div className="absolute left-[-60px] top-2 z-10">
+    <div className="absolute left-[-50px] top-2 z-10">
       <button
         type="button"
         onClick={() => setShowTools(!showTools)}
