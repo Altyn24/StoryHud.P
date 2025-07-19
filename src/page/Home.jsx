@@ -1,24 +1,28 @@
-import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { fetchStories } from "../features/auth/storiesSlice";
+import StoryCard from "./StoryCards";
 
 function Home() {
-  // const [content, setContent] = useState("");
-  const content = ["Новые", "Популярные", "Обновление"];
+  const dispatch = useDispatch();
+  const { items, status } = useSelector((state) => state.stories);
+
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchStories());
+    }
+  }, [status, dispatch]);
 
   return (
-    <main className="container mx-auto p-4 rounded-xl max-w-screen">
-      <div className="justify-items-start max-w-screen">
-        <ul className="flex gap-5 border-b-1 border-gray-300 p-2 w-full">
-          {content.map((item) => (
-            <li className="cursor-pointer hover:text-[#3E13AF]">{item}</li>
-          ))}
-        </ul>
-      </div>
-      <div className="justify-items-center">
-        <p className="text-lg">
-          Это место, где вы можете делиться своими историями и вдохновлять
-          других.
-        </p>
-      </div>
+    <main className="max-w-2xl mx-auto p-4">
+      <h2 className="text-2xl font-bold mb-6">Сегодяшная лента</h2>
+
+      {status === "loading" && <p>Загрузка...</p>}
+      {status === "failed" && <p>Ошибка при загрузке историй</p>}
+
+      {items.map((story) => (
+        <StoryCard key={story.id} story={story} />
+      ))}
     </main>
   );
 }

@@ -26,33 +26,34 @@ const SignUp = () => {
           StoryHub
         </h1>
         <p className="text-center text-gray-600 mb-6">Создайть аккаунт</p>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full p-3 border border-gray-300 rounded"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Пароль"
-            className="w-full p-3 border border-gray-300 rounded"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <button
-            type="submit"
-            className="w-full p-3 rounded-2xl border-3 border-red-600 hover:bg-red-500 hover:text-white"
-          >
-            Зарегистрироваться
-          </button>
+
+        <form onSubmit={handleSubmit} className="space-y-4 mb-3"> 
+          <div className="mb-5">
+            <input
+              type="email"
+              placeholder="Email"
+              className="w-full outline-none p-3 border-b-1"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              />
+            <input
+              type="password"
+              placeholder="Пароль"
+              className="w-full outline-none p-3 border-b-1"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              />
+              </div>
+            <button type="submit" className="!text-white p-2 w-full rounded-md bg-green-500">
+              Зарегистрироваться
+            </button>
         </form>
+
         <p className="text-center text-sm mt-4 text-gray-600">
           Уже есть аккаунт?{" "}
-          <Link to="/login" className="text-red-600 hover:underline">
+          <Link to="/login" className="font-bold underline">
             Войти
           </Link>
         </p>

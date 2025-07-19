@@ -77,7 +77,7 @@ function Header() {
             {isAuth && user ? (
               <div>
                 <img
-                  src={user.photoURL || "https://i.pravatar.cc/100"}
+                  src={user.photoURL}
                   alt="avatar"
                   className="w-10 h-10 rounded-full border-2 border-red-600 cursor-pointer"
                   onClick={() => setSidebarOpen(true)}
@@ -120,7 +120,7 @@ function Header() {
         {user && (
           <div className="flex flex-col items-center mb-6">
             <img
-              src={user.photoURL || "https://i.pravatar.cc/100"}
+              src={user.photoURL }
               alt="avatar"
               className="w-20 h-20 rounded-full border-2 border-gray-300"
             />
@@ -157,3 +157,4 @@ function Header() {
 export default Header;
 
 // "https://i.pravatar.cc/100"
+//  || "https://i.pravatar.cc/100"
