@@ -28,7 +28,7 @@ function Header() {
               StoryHub
             </Link>
 
-            <div className="flex items-center w-[260px]">
+            {/* <div className="flex items-center w-[260px]">
               <label htmlFor="search" className="flex">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -51,7 +51,7 @@ function Header() {
                 className="p-2 outline-none"
                 placeholder="Поиск"
               />
-            </div>
+            </div> */}
           </div>
           
           <div className="flex items-center gap-8">
