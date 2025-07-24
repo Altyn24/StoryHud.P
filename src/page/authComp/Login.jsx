@@ -42,11 +42,13 @@ function Login() {
         </h1>
         <p className="text-center text-gray-600 mb-6">Войдите в аккаунт</p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 mb-5">
+          <div className="mb-5">
+
           <input
             type="email"
             placeholder="Email"
-            className="w-full p-3 border border-gray-300 rounded"
+            className="w-full p-3 border-b-1 outline-none"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -54,14 +56,15 @@ function Login() {
           <input
             type="password"
             placeholder="Пароль"
-            className="w-full p-3 border border-gray-300 rounded"
+            className="w-full p-3 border-b-1 outline-none"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+            </div>
           <button
             type="submit"
-            className="w-full bg-red-600 hover:bg-red-700 text-white p-3 rounded transition"
+            className="w-full !text-white bg-green-500 p-2 rounded-md"
           >
             Войти
           </button>
@@ -69,13 +72,13 @@ function Login() {
 
         <p className="text-center text-sm mt-4 text-gray-600">
           Нет аккаунта?{" "}
-          <Link to="/signup" className="text-red-600 hover:underline">
+          <Link to="/signup" className="font-bold underline">
             Зарегистрироваться
           </Link>
         </p>
         <p className="text-center text-sm text-gray-600 mt-2">
           Забыли пароль?{" "}
-          <Link to="/reset-password" className="text-red-600 hover:underline">
+          <Link to="/reset-password" className="font-bold underline">
             Восстановить
           </Link>
         </p>

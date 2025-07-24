@@ -65,9 +65,10 @@ const SignUp = () => {
             Зарегистрироваться
           </button>
         </form>
+
         <p className="text-center text-sm mt-4 text-gray-600">
           Уже есть аккаунт?{" "}
-          <Link to="/login" className="text-red-600 hover:underline">
+          <Link to="/login" className="font-bold underline">
             Войти
           </Link>
         </p>

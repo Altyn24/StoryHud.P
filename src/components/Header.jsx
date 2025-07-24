@@ -51,9 +51,9 @@ function Header() {
                 className="p-2 outline-none"
                 placeholder="Поиск"
               />
-            </div> */}
+              */}
           </div>
-          
+
           <div className="flex items-center gap-8">
             <Link to="/create" className="text-gray-500 flex items-center">
               <label>
@@ -91,7 +91,6 @@ function Header() {
           </div>
         </header>
       </div>
-
       <div
         className={`fixed inset-0 z-40 transition-opacity duration-300 ${
           sidebarOpen
@@ -100,8 +99,7 @@ function Header() {
         }`}
         onClick={closeSidebar}
       />
-
-      {/* Сайдбар */}
+      ){/* Сайдбар */}
       <div
         className={`fixed top-0 right-0 h-screen w-72 bg-white shadow-lg z-50 p-6 flex flex-col transform transition-transform duration-300 ${
           sidebarOpen ? "translate-x-0" : "translate-x-full"
