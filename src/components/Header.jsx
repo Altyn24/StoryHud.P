@@ -99,7 +99,7 @@ function Header() {
         }`}
         onClick={closeSidebar}
       />
-      ){/* Сайдбар */}
+      {/* Сайдбар */}
       <div
         className={`fixed top-0 right-0 h-screen w-72 bg-white shadow-lg z-50 p-6 flex flex-col transform transition-transform duration-300 ${
           sidebarOpen ? "translate-x-0" : "translate-x-full"
@@ -130,16 +130,6 @@ function Header() {
         )}
 
         <nav className="flex flex-col gap-4 border-b-1 p-2">
-          <Link
-            to="/profile"
-            onClick={closeSidebar}
-            className="hover:underline"
-          >
-            Профиль
-          </Link>
-          <Link to="/" onClick={closeSidebar} className="hover:underline">
-            Главная
-          </Link>
           <button
             onClick={handleLogout}
             className="text-left text-red-600 hover:underline"

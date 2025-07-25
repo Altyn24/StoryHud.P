@@ -1,4 +1,6 @@
 import React from "react";
+// import { instanse } from "./instans/instans.js";
+import { getImage } from "../components/getFile.js";
 
 const StoryCards = ({ story }) => {
   return (
@@ -13,9 +15,9 @@ const StoryCards = ({ story }) => {
           <p className="text-sm font-semibold text-gray-800">
             {story.authorName || "Аноним"}
           </p>
-          {/* <p className="text-xs text-gray-500">
-            {new Date(story.createdAt?.seconds * 1000).toLocaleDateString()}
-          </p> */}
+          <div>
+            <img src={getImage(story.filename)} />
+          </div>
         </div>
       </div>
       <h3 className="text-lg font-bold mb-1">{story.title}</h3>

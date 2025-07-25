@@ -11,6 +11,7 @@ import ResetPassword from "./page/authComp/ResetPasword";
 import AuthProvider from "./page/authComp/AuthProvider";
 import CreateStory from "./page/CreateStory";
 import BottomNav from "./page/BottomNav";
+import Search from "./page/Search"
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/search" element={<Search/>}/>
         <Route path="/profile" element={<Profile />} />
         <Route path="/create" element={<CreateStory/>}/>
         <Route path="/reset-password" element={<ResetPassword/>}/>

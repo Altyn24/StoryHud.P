@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import TextEditorTools from "./TextEditorTools";
 import { db } from "../firebase/firebaseConfig";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { instanse } from "./instans/instans";
 
 const DRAFT_KEY = "storyhub_blocks_draft";
 
@@ -46,19 +47,31 @@ export default function CreateStory() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const hasContent = blocks.some(
-      (b) => b.type === "text" && b.content.trim()
-    );
+    const form_data = new FormData();
+    console.log(e.target[3].files);
 
-    if (!title || !hasContent) return;
+    form_data.append("file", e?.target[3]?.files[0]);
+    console.log(form_data.get("file"));
 
+    // const hasContent = blocks.some(
+    //   (b) => b.type === "text" && b.content.trim()
+    // );
+
+    // if (!title || !hasContent) return;
+
+    console.log("Запрос начался");
     try {
+      const filename = await instanse.post("/api/upload", form_data);
+
+      console.log("Filename", filename.data.filename);
+
       await addDoc(collection(db, "stories"), {
         title,
         blocks,
         authorId: user.uid,
         authorName: user.name || "Аноним",
         createdAt: serverTimestamp(),
+        filename: filename.data.filename
       });
 
       setTitle("");
@@ -74,21 +87,29 @@ export default function CreateStory() {
   return (
     <div className="relative min-h-screen">
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto p-6 space-y-6">
-       
-
-        <input
-          type="text"
-          placeholder="Название"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          style={{
-            width: "100%",
-            fontSize: "2rem",
-            fontWeight: "800",
-            outline: "none",
-            marginBottom:"10px"
-          }}
-        />
+        <div className="flex items-center gap-10">
+          <input
+            type="text"
+            placeholder="Название"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            style={{
+              width: "100%",
+              fontSize: "2rem",
+              fontWeight: "800",
+              outline: "none",
+              marginBottom: "10px",
+            }}
+          />
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              className="!text-white px-4 py-2 rounded-2xl bg-gray-500 hover:bg-green-500 transition"
+            >
+              Опубликовать
+            </button>
+          </div>
+        </div>
 
         <div className="space-y-6">
           {blocks.map((block, i) => (
@@ -119,15 +140,6 @@ export default function CreateStory() {
               />
             </div>
           ))}
-        </div>
-
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            className="!text-white px-4 py-2 rounded-2xl bg-gray-500 hover:bg-green-500 transition"
-          >
-            Опубликовать
-          </button>
         </div>
       </form>
 
