@@ -3,6 +3,8 @@ import { useEffect } from "react";
 import { fetchStories } from "../features/auth/storiesSlice";
 import StoryCard from "./StoryCards";
 import { Flex, Spin } from "antd";
+import { Skeleton } from "antd";
+import { Link } from "react-router-dom";
 
 function Home() {
   const dispatch = useDispatch();
@@ -29,7 +31,9 @@ function Home() {
       {status === "failed" && <p>Ошибка при загрузке историй</p>}
 
       {items.map((story) => (
-        <StoryCard key={story.id} story={story} />
+        <Link to="/post">
+          <StoryCard key={story.id} story={story} />
+        </Link>
       ))}
     </main>
   );

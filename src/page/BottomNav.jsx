@@ -66,8 +66,9 @@ const navItems = [
 
 const BottomNav = () => {
   const location = useLocation();
-
-  if (location.pathname === "/create" && "/signup" && "/login") return null;
+  if (location.pathname === "/create") return null;
+  if (location.pathname === "/signup") return null;
+  if (location.pathname === "/login") return null;
 
   return (
     <AnimatePresence>

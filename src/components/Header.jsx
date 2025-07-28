@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { logoutUser } from "../features/auth/logoutTC";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -18,6 +18,10 @@ function Header() {
   const closeSidebar = () => {
     setSidebarOpen(false);
   };
+
+  const location = useLocation();
+  if (location.pathname === "/signup") return null;
+  if (location.pathname === "/login") return null;
 
   return (
     <>

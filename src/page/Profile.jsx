@@ -4,7 +4,7 @@ import { db } from "../firebase/firebaseConfig";
 import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
 
-const Profile = () => {
+const Profile = ({ story }) => {
   const user = useSelector((state) => state.auth.user);
 
   const [stories, setStories] = useState([]);
@@ -41,11 +41,9 @@ const Profile = () => {
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">
-          Привет, {user?.name || "Писатель"}!
-        </h1>
+        <h1 className="text-3xl font-bold">{user?.name || "Писатель"}</h1>
         <img
-          src={user?.photoURL || "https://via.placeholder.com/100"}
+          src={user?.photoURL || "https://i.pravatar.cc/100"}
           alt="avatar"
           className="w-20 h-20 rounded-full object-cover mb-4"
         />
@@ -54,7 +52,7 @@ const Profile = () => {
       <h2 className="text-xl font-semibold mb-4">Мои публикации</h2>
 
       {stories.length === 0 ? (
-        <div className="bg-gray-100 p-6 rounded text-center text-gray-600">
+        <div className="bg-gray-100 p-6 rounded-md text-center text-gray-600">
           <p>У вас пока нет публикаций.</p>
           <button
             onClick={() => navigate("/create")}
@@ -65,7 +63,7 @@ const Profile = () => {
         </div>
       ) : (
         <div className="space-y-4">
-          {stories.map((story) => (
+          {story.map((story) => (
             <div key={story.id} className="bg-white shadow p-4 rounded">
               <Link
                 to={`/story/${story.id}`}

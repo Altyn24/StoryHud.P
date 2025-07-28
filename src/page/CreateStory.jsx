@@ -12,8 +12,10 @@ export default function CreateStory() {
   const user = useSelector((state) => state.auth.user);
   const [title, setTitle] = useState("");
   const [blocks, setBlocks] = useState([{ type: "text", content: "" }]);
+  const [content, setContent] = useState("");
   const [success, setSuccess] = useState(false);
   const [showTools, setShowTools] = useState(false);
+  const [error, setError] = useState("");
 
   const handleTextChange = (index, text) => {
     const updated = [...blocks];
@@ -37,6 +39,7 @@ export default function CreateStory() {
     if (saved) {
       const { title, blocks } = JSON.parse(saved);
       setTitle(title || "");
+      setContent("")
       setBlocks(blocks || [{ type: "text", content: "" }]);
     }
   }, []);
@@ -47,22 +50,42 @@ export default function CreateStory() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
     const form_data = new FormData();
     console.log(e.target[3].files);
 
     form_data.append("file", e?.target[3]?.files[0]);
+    const file = form_data;
     console.log(form_data.get("file"));
 
-    // const hasContent = blocks.some(
-    //   (b) => b.type === "text" && b.content.trim()
-    // );
+    const hasContent = blocks.some(
+      (b) => b.type === "text" && b.content.trim()
+    );
 
-    // if (!title || !hasContent) return;
+    if (!title.trim()) {
+      setError("Введите название истории.");
+      return;
+    }
+
+    if (!hasContent) {
+      setError("История не может быть пустой.");
+      return;
+    }
+
+    if (!file) {
+      setError("Добавьте изображение.");
+      return;
+    }
 
     console.log("Запрос начался");
     try {
       const filename = await instanse.post("/api/upload", form_data);
 
+      if (!filename?.data?.filename) {
+        setError("Файл не загрузился. Попробуйте снова.");
+        return;
+      }
       console.log("Filename", filename.data.filename);
 
       await addDoc(collection(db, "stories"), {
@@ -71,7 +94,7 @@ export default function CreateStory() {
         authorId: user.uid,
         authorName: user.name || "Аноним",
         createdAt: serverTimestamp(),
-        filename: filename.data.filename
+        filename: filename.data.filename,
       });
 
       setTitle("");
@@ -108,10 +131,12 @@ export default function CreateStory() {
             >
               Опубликовать
             </button>
+            {error && <p className="text-red-500 font-medium mt-2">{error}</p>}
           </div>
         </div>
 
         <div className="space-y-6">
+
           {blocks.map((block, i) => (
             <div key={i} className="relative group">
               {block.type === "text" && (
