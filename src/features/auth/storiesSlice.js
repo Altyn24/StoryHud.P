@@ -2,14 +2,22 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase/firebaseConfig";
 
+export const fetchStories = createAsyncThunk(
+  "stories/fetchStories",
+  async () => {
+    const querySnapshot = await getDocs(collection(db, "stories"));
 
-export const fetchStories = createAsyncThunk("stories/fetchStories", async () => {
-  const querySnapshot = await getDocs(collection(db, "stories"));
-  return querySnapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  }));
-});
+    return querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate().toISOString() || null,
+      };
+    });
+  }
+);
 
 const storiesSlice = createSlice({
   name: "stories",

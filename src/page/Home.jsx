@@ -17,7 +17,7 @@ function Home() {
   }, [status, dispatch]);
 
   return (
-    <main className="max-w-2xl mx-auto p-4 mb-6">
+    <main className="max-w-2xl mx-auto p-4 ">
       <h2 className="text-2xl font-bold mb-6">Сегодяшная лента</h2>
 
       {status === "loading" && (
@@ -31,9 +31,7 @@ function Home() {
       {status === "failed" && <p>Ошибка при загрузке историй</p>}
 
       {items.map((story) => (
-        <Link to="/post">
-          <StoryCard key={story.id} story={story} />
-        </Link>
+        <StoryCard key={story.id} story={story} />
       ))}
     </main>
   );
