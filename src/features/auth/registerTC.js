@@ -28,11 +28,12 @@ export const createUser = createAsyncThunk(
         photoURL,
       });
 
+      const updateUser = auth.currentUser;
       dispatch(
         setUser({
           uid: user.uid,
           email: user.email,
-          name: name,
+          name: updateUser.displayName,
           photoURL: user.photoURL,
         })
       );

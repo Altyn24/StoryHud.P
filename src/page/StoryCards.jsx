@@ -8,9 +8,8 @@ const StoryCards = ({ story }) => {
 
   return (
     <div className="bg-white rounded-2xl shadow-md p-4 mb-4 hover:bg-gray-50 transition">
-      <Link to={`/post/${story.id}`} className="block">
-        <div className="flex items-center mb-2 justify-between">
-          <Link to={`/profile`} className="flex gap-4 items-center">
+      <div className="flex items-center mb-2 justify-between">
+        <Link to={`/profile`} className="flex gap-4 items-center">
             <img
               src={story.authorPhoto || "https://i.pravatar.cc/100"}
               alt="avatar"
@@ -20,13 +19,14 @@ const StoryCards = ({ story }) => {
               {story.authorName || "Аноним"}
             </p>
           </Link>
-          <p className="text-sm text-gray-500">
-            {story.createdAt
-              ? new Date(story.createdAt).toLocaleDateString()
-              : "Дата неизвестна"}
-          </p>
-        </div>
+        <p className="text-sm text-gray-500">
+          {story.createdAt
+            ? new Date(story.createdAt).toLocaleDateString()
+            : "Дата неизвестна"}
+        </p>
+      </div>
 
+      <Link to={`/post/${story.id}`} className="block">
         <div className="flex justify-between items-start gap-4">
           <div className="flex-1 mt-3">
             <h3 className="text-lg font-bold mb-1">{story.title}</h3>

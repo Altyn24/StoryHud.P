@@ -5,7 +5,6 @@ import { Link, useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   const [name, setName] = useState("");
-  const [avatar, setAvatar] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
@@ -36,11 +35,6 @@ const SignUp = () => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-          />
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setAvatar(e.target.files[0])}
           />
           <input
             type="email"

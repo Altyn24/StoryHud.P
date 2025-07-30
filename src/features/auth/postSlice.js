@@ -15,7 +15,7 @@ export const fetchPostById = createAsyncThunk(
       return {
         id: docSnap.id,
         ...data,
-        createdAt, // ← строка, не Timestamp!
+        createdAt,
       };
     } else {
       return thunkAPI.rejectWithValue("История не найдена");
