@@ -1,5 +1,5 @@
+import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 
 const navItems = [
   {
@@ -64,45 +64,50 @@ const navItems = [
   },
 ];
 
-const BottomNav = () => {
+const SidebarNav = ({ isOpen, onClose }) => {
   const location = useLocation();
-  if (location.pathname === "/create") return null;
   if (location.pathname === "/signup") return null;
   if (location.pathname === "/login") return null;
-
+  
   return (
-    <AnimatePresence>
-      <motion.nav
-        initial={{ y: 100 }}
-        animate={{ y: 0 }}
-        exit={{ y: 100 }}
-        transition={{ duration: 0.3 }}
-        className="fixed bottom-0 left-0 w-full bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 z-50"
+    <>
+      <div
+        onClick={onClose}
+        className={`fixed inset-0 z-30 transition-opacity ${
+          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      />
+
+      {/* Сайдбар слева */}
+      <div
+        className={`fixed top-[64px] left-0 h-full  bg-white shadow-md z-40 transform transition-transform duration-300 ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
       >
-        <div className="flex justify-around items-center py-2">
+        <div className="p-6 border-b m-3">
+          <h2 className="text-xl font-bold">Навигация</h2>
+        </div>
+        <nav className="flex flex-col py-5 px-7 gap-4">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `flex flex-col items-center text-xs ${
-                  isActive ? "text-blue-600" : "text-gray-500"
+                `text-lg font-medium ${
+                  isActive ? "text-blue-600" : "text-gray-700"
                 }`
               }
             >
-              <motion.div
-                whileTap={{ scale: 0.9 }}
-                className="flex flex-col items-center"
-              >
+              <div className="flex gap-2 text-1xl">
                 {item.icon}
-                <span>{item.label}</span>
-              </motion.div>
+                {item.label}
+              </div>
             </NavLink>
           ))}
-        </div>
-      </motion.nav>
-    </AnimatePresence>
+        </nav>
+      </div>
+    </>
   );
 };
 
-export default BottomNav;
+export default SidebarNav;

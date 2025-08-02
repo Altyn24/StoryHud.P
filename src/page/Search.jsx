@@ -9,7 +9,7 @@ const handleSearch = ()=>{
 
 
   return (
-    <div className="max-w-screen max-auto m-2 ">
+    <div className="max-w-screen max-auto m-2 pt-24">
       <h3 className="!text-2xl text-center">Поиск</h3>
       <div className="justify-items-center rounded-xl shadow-2xl py-3">
         <div className="h-[300px]">

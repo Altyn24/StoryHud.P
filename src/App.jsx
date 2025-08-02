@@ -10,7 +10,6 @@ import Profile from "./page/Profile";
 import ResetPassword from "./page/authComp/ResetPasword";
 import AuthProvider from "./page/authComp/AuthProvider";
 import CreateStory from "./page/CreateStory";
-import BottomNav from "./page/BottomNav";
 import Search from "./page/Search";
 import Post from "./page/Post";
 
@@ -29,7 +28,6 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-      <BottomNav />
     </AuthProvider>
   );
 }

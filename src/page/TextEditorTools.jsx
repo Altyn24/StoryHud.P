@@ -26,14 +26,13 @@ export default function TextEditorTools({ showTools, setShowTools }) {
           />
         </svg>
       </button>
-
       <AnimatePresence>
         {showTools && (
           <motion.div
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -10 }}
-            className="mt-2 space-y-2 bg-white border rounded shadow-lg p-2 w-44"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="mt-2 space-y-2 bg-white border rounded shadow-lg p-2 h-50 flex flex-col gap-1 "
           >
             <label htmlFor="imageStory" onClick={() => ref.current.click()}>
               <input
@@ -56,6 +55,8 @@ export default function TextEditorTools({ showTools, setShowTools }) {
                   />
                 </svg>
             </label>
+            <button type="button" className="">...</button>
+            <button type="button" ></button>
           </motion.div>
         )}
       </AnimatePresence>

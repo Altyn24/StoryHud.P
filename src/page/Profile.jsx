@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { db } from "../firebase/firebaseConfig";
 import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
+import  avatarDef  from "../assets/avatar-people-user-svgrepo-com.svg";
 
 const Profile = ({ story }) => {
   const user = useSelector((state) => state.auth.user);
@@ -39,11 +40,11 @@ const Profile = ({ story }) => {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10">
+    <div className="max-w-3xl mx-auto px-4 py-10 pt-24">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">{user?.name || "Писатель"}</h1>
         <img
-          src={user?.photoURL || "https://i.pravatar.cc/100"}
+          src={user?.photoURL || avatarDef}
           alt="avatar"
           className="w-20 h-20 rounded-full object-cover mb-4"
         />

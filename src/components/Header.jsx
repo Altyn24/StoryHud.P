@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { logoutUser } from "../features/auth/logoutTC";
 import { useDispatch, useSelector } from "react-redux";
+import NavBar from "../page/NavBar";
+import avatarDef from "../assets/avatar-people-user-svgrepo-com.svg";
 
 function Header() {
   const isAuth = useSelector((state) => state.auth.isAuth);
@@ -9,6 +11,7 @@ function Header() {
   const dispatch = useDispatch();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [leftSidebarOpen, setLeftSidebarOpen] = useState(false);
 
   const handleLogout = () => {
     dispatch(logoutUser());
@@ -25,37 +28,33 @@ function Header() {
 
   return (
     <>
-      <div className="p-3 w-full max-w-screen-xl shadow-md mb-3 mx-auto">
-        <header className="flex justify-between items-center">
-          <div className="flex items-center gap-5">
-            <Link to="/" className="text-2xl font-bold">
+      <div className="p-3 w-full max-w-screen-xl shadow-md mb-3 mx-auto bg-[#acc3db] fixed top-0 left-0 right-0 z-50 ">
+        <header className="flex justify-between items-center ">
+          <div className="flex items-center gap-3">
+            <button onClick={() => setLeftSidebarOpen((prev) => !prev)} className="cursor-pointer">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                />
+              </svg>
+            </button>
+            <NavBar
+              isOpen={leftSidebarOpen}
+              onClose={() => setLeftSidebarOpen(false)}
+            />
+
+            <Link to="/" className="text-2xl font-bold text-white">
               StoryHub
             </Link>
-
-            {/* <div className="flex items-center w-[260px]">
-              <label htmlFor="search" className="flex">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="size-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-                  />
-                </svg>
-              </label>
-              <input
-                type="text"
-                id="search"
-                className="p-2 outline-none"
-                placeholder="Поиск"
-              />
-              */}
           </div>
 
           <div className="flex items-center gap-8">
@@ -81,7 +80,7 @@ function Header() {
             {isAuth && user ? (
               <div>
                 <img
-                  src={user.photoURL || "https://i.pravatar.cc/100"}
+                  src={user.photoURL || avatarDef}
                   alt="avatar"
                   className="w-10 h-10 rounded-full border-2 border-red-600 cursor-pointer"
                   onClick={() => setSidebarOpen(true)}
@@ -95,6 +94,7 @@ function Header() {
           </div>
         </header>
       </div>
+
       <div
         className={`fixed inset-0 z-40 transition-opacity duration-300 ${
           sidebarOpen
@@ -122,7 +122,7 @@ function Header() {
         {user && (
           <div className="flex flex-col items-center mb-6">
             <img
-              src={user.photoURL || "https://i.pravatar.cc/100"}
+              src={user.photoURL || avatarDef}
               alt="avatar"
               className="w-20 h-20 rounded-full border-2 border-gray-300"
             />
@@ -134,6 +134,7 @@ function Header() {
         )}
 
         <nav className="flex flex-col gap-4 border-b-1 p-2">
+          {/* <Link to="/profileset">Настройки</Link> */}
           <button
             onClick={handleLogout}
             className="text-left text-red-600 hover:underline"
