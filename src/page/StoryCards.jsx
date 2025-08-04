@@ -8,8 +8,8 @@ const StoryCards = ({ story }) => {
   )?.content;
 
   return (
-    <div className="bg-white rounded-2xl shadow-md p-4 mb-4 hover:bg-gray-50 transition">
-      <div className="flex items-center mb-2 justify-between">
+    <div className="bg-white shadow-xl p-4 mb-4 hover:bg-gray-50 transition">
+      <div className="flex items-center justify-between">
         <Link to={`/profile`} className="flex gap-4 items-center">
           <img
             src={story.authorPhoto || avatarDef}
@@ -31,12 +31,11 @@ const StoryCards = ({ story }) => {
         <div className="flex justify-between items-start gap-4">
           <div className="flex-1 mt-3">
             <h3 className="text-lg font-bold mb-1">{story.title}</h3>
-            <p className="text-gray-700 line-clamp-3">{firstText}</p>
+            <p className="text-gray-700 line-clamp-2">{firstText}</p>
           </div>
-
-          <div className="shrink-0">
+          <div className="">
             <img
-              className="rounded-xl w-[200px] h-auto object-cover"
+              className="rounded-xl w-[200px] h-auto"
               src={getImage(story.filename)}
               alt="cover"
             />

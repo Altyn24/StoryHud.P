@@ -6,35 +6,18 @@ import { message } from "antd";
 
 export const createUser = createAsyncThunk(
   "auth/createUser",
-  async ({ name, email, password, avatar }, { dispatch, rejectWithValue }) => {
+  async ({ email, password }, { dispatch, rejectWithValue }) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      let photoURL = "";
-
-      if (avatar) {
-        const avatarRef = ref(Storage, `avatars/${user.id}`);
-        await uploadBytes(avatarRef, avatar);
-        photoURL = await getDownloadURL(avatarRef);
-      }
-
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      await updateProfile(user, {
-        displayName: name,
-        photoURL,
-      });
-
-      const updateUser = auth.currentUser;
       dispatch(
         setUser({
           uid: user.uid,
           email: user.email,
-          name: updateUser.displayName,
-          photoURL: user.photoURL,
+          displayName: user.displayName || "",
+          name: user.displayName || "",
+          photoURL: user.photoURL || "",
         })
       );
 

@@ -6,21 +6,23 @@ import { Link, useNavigate } from "react-router-dom";
 function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if (!email || !password) {
+      alert("Пожалуйста, заполните все поля");
+      return;
+    }
     if (password.length < 6) {
-      return alert("Пароль слишком короткий");
+      alert("Пароль слишком короткий");
+      return;
     }
 
-    const resultAction = await dispatch(loginUser({ email, password }));
-
-    if (loginUser.fulfilled.match(resultAction)) {
-      const user = resultAction.payload;
+    const resultAction = await dispatch(loginUser({ email, password })).unwrap();
+    if (resultAction) {
+      const user = resultAction;
       localStorage.setItem(
         "user",
         JSON.stringify({
@@ -29,7 +31,6 @@ function Login() {
           email: user.email,
         })
       );
-
       navigate("/profile");
     }
   };
@@ -41,27 +42,25 @@ function Login() {
           StoryHub
         </h1>
         <p className="text-center text-gray-600 mb-6">Войдите в аккаунт</p>
-
         <form onSubmit={handleSubmit} className="space-y-4 mb-5">
           <div className="mb-5">
-
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full p-3 border-b-1 outline-none"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Пароль"
-            className="w-full p-3 border-b-1 outline-none"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-            </div>
+            <input
+              type="email"
+              placeholder="Email"
+              className="w-full p-3 border-b-1 outline-none"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Пароль"
+              className="w-full p-3 border-b-1 outline-none"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
           <button
             type="submit"
             className="w-full !text-white bg-green-500 p-2 rounded-md"
@@ -69,7 +68,6 @@ function Login() {
             Войти
           </button>
         </form>
-
         <p className="text-center text-sm mt-4 text-gray-600">
           Нет аккаунта?{" "}
           <Link to="/signup" className="font-bold underline">

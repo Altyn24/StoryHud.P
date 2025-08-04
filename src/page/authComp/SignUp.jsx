@@ -4,20 +4,22 @@ import { createUser } from "../../features/auth/registerTC";
 import { Link, useNavigate } from "react-router-dom";
 
 const SignUp = () => {
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (password.length < 6) {
       alert("Пароль должен быть больше 6 символов");
       return;
     }
-    dispatch(createUser({ name, email, password }));
-    navigate("/");
+
+    const resultAction = await dispatch(createUser({ email, password })).unwrap();
+    if (resultAction) {
+      navigate("/profileset");
+    }
   };
 
   return (
@@ -26,16 +28,8 @@ const SignUp = () => {
         <h1 className="text-3xl font-bold text-center mb-4 text-gray-800">
           StoryHub
         </h1>
-        <p className="text-center text-gray-600 mb-6">Создайть аккаунт</p>
+        <p className="text-center text-gray-600 mb-6">Создайте аккаунт</p>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            placeholder="Имя"
-            className="w-full p-3 border border-gray-300 rounded"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
           <input
             type="email"
             placeholder="Email"
@@ -59,7 +53,6 @@ const SignUp = () => {
             Зарегистрироваться
           </button>
         </form>
-
         <p className="text-center text-sm mt-4 text-gray-600">
           Уже есть аккаунт?{" "}
           <Link to="/login" className="font-bold underline">

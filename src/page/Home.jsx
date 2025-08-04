@@ -7,7 +7,7 @@ import { Flex, Spin } from "antd";
 function Home() {
   const dispatch = useDispatch();
   const { items, status } = useSelector((state) => state.stories);
-  const cotigories = ["Новости", "Рассказы", "Сценарии"];
+  const cotigories = ["Всё", "Статьи", "Рассказы", "Сценарии"];
 
   useEffect(() => {
     if (status === "idle") {
@@ -16,19 +16,19 @@ function Home() {
   }, [status, dispatch]);
 
   return (
-    <main className="max-w-2xl mx-auto p-4 pt-24">
+    <main className="max-w-3xl mx-auto p-4 pt-24">
       <h2 className="text-2xl font-bold mb-6">Сегодяшная лента</h2>
-      <div className="flex gap-3">
-        {/* {cotigories.map((item) => (
-          <li
+      <div className="flex gap-7">
+        {cotigories.map((item) => (
+          <span
             key={item}
-            className={`m-4 cursor-pointer hover:underline hover:text-blue-600 ${
+            className={`mb-4 cursor-pointer text-xl text-gray-500 hover:text-red-400 transition-all ${
               cotigories === item ? "hover:text-blue-600" : ""
             }`}
           >
             {item}
-          </li>
-        ))} */}
+          </span>
+        ))}
       </div>
 
       {status === "loading" && (

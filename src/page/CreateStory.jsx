@@ -39,7 +39,7 @@ export default function CreateStory() {
     if (saved) {
       const { title, blocks } = JSON.parse(saved);
       setTitle(title || "");
-      setContent("")
+      setContent("");
       setBlocks(blocks || [{ type: "text", content: "" }]);
     }
   }, []);
@@ -108,7 +108,28 @@ export default function CreateStory() {
   };
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen pt-24">
+      <div className="flex gap-4 m-3">
+        <select>
+          <option>Новости</option>
+          <option>Рассказ</option>
+          <option>Сценарий</option>
+        </select>
+        <label className="flex gap-2">
+          <input type="checkbox" />
+          Ужасы
+        </label>
+        <label className="flex gap-2">
+          <input type="checkbox" />
+          Фантастика
+        </label>
+        <label className="flex gap-2">
+          <input type="checkbox" />
+          Роман
+        </label>
+       
+      </div>
+
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto p-6 space-y-6">
         <div className="flex items-center gap-10">
           <input
@@ -136,7 +157,6 @@ export default function CreateStory() {
         </div>
 
         <div className="space-y-6">
-
           {blocks.map((block, i) => (
             <div key={i} className="relative group">
               {block.type === "text" && (

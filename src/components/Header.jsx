@@ -9,9 +9,9 @@ function Header() {
   const isAuth = useSelector((state) => state.auth.isAuth);
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
-
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(false);
+  const location = useLocation();
 
   const handleLogout = () => {
     dispatch(logoutUser());
@@ -22,14 +22,12 @@ function Header() {
     setSidebarOpen(false);
   };
 
-  const location = useLocation();
-  if (location.pathname === "/signup") return null;
-  if (location.pathname === "/login") return null;
+  if (location.pathname === "/signup" || location.pathname === "/login") return null;
 
   return (
     <>
-      <div className="p-3 w-full max-w-screen-xl shadow-md mb-3 mx-auto bg-[#acc3db] fixed top-0 left-0 right-0 z-50 ">
-        <header className="flex justify-between items-center ">
+      <div className="p-3 w-full max-w-screen-xl shadow-md mb-3 mx-auto bg-[#acc3db] fixed top-0 left-0 right-0 z-50">
+        <header className="flex justify-between items-center">
           <div className="flex items-center gap-3">
             <button onClick={() => setLeftSidebarOpen((prev) => !prev)} className="cursor-pointer">
               <svg
@@ -51,30 +49,26 @@ function Header() {
               isOpen={leftSidebarOpen}
               onClose={() => setLeftSidebarOpen(false)}
             />
-
             <Link to="/" className="text-2xl font-bold text-white">
               StoryHub
             </Link>
           </div>
-
           <div className="flex items-center gap-8">
-            <Link to="/create" className="text-gray-500 flex items-center">
-              <label>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="size-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                  />
-                </svg>
-              </label>
+            <Link to="/create" className="text-gray-500 flex items-center gap-1">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                />
+              </svg>
               Написать историю
             </Link>
             {isAuth && user ? (
@@ -94,7 +88,6 @@ function Header() {
           </div>
         </header>
       </div>
-
       <div
         className={`fixed inset-0 z-40 transition-opacity duration-300 ${
           sidebarOpen
@@ -103,7 +96,6 @@ function Header() {
         }`}
         onClick={closeSidebar}
       />
-      {/* Сайдбар */}
       <div
         className={`fixed top-0 right-0 h-screen w-72 bg-white shadow-lg z-50 p-6 flex flex-col transform transition-transform duration-300 ${
           sidebarOpen ? "translate-x-0" : "translate-x-full"
@@ -118,7 +110,6 @@ function Header() {
             &times;
           </button>
         </div>
-
         {user && (
           <div className="flex flex-col items-center mb-6">
             <img
@@ -127,14 +118,18 @@ function Header() {
               className="w-20 h-20 rounded-full border-2 border-gray-300"
             />
             <p className="mt-2 text-lg font-semibold">
-              {user.name || "Писатель"}
+              {user.name || "Писатель"} {/* Отображение имени */}
             </p>
             <p className="text-sm text-gray-500">{user.email}</p>
           </div>
         )}
-
         <nav className="flex flex-col gap-4 border-b-1 p-2">
-          {/* <Link to="/profileset">Настройки</Link> */}
+          <Link to="/profile" className="hover:underline">
+            Профиль
+          </Link>
+          <Link to="/profileset" className="hover:underline">
+            Настройки
+          </Link>
           <button
             onClick={handleLogout}
             className="text-left text-red-600 hover:underline"
