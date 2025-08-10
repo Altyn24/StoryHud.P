@@ -4,8 +4,9 @@ import { logoutUser } from "../features/auth/logoutTC";
 import { useDispatch, useSelector } from "react-redux";
 import NavBar from "../page/NavBar";
 import avatarDef from "../assets/avatar-people-user-svgrepo-com.svg";
+import Search from "../page/Search";
 
-function Header() {
+function Header({ openSearch, setOpensearch }) {
   const isAuth = useSelector((state) => state.auth.isAuth);
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
@@ -22,39 +23,75 @@ function Header() {
     setSidebarOpen(false);
   };
 
-  if (location.pathname === "/signup" || location.pathname === "/login") return null;
+  if (
+    location.pathname === "/signup" ||
+    location.pathname === "/login" ||
+    location.pathname === "/authprovider"
+  )
+    return null;
 
   return (
     <>
       <div className="p-3 w-full max-w-screen-xl shadow-md mb-3 mx-auto bg-[#acc3db] fixed top-0 left-0 right-0 z-50">
         <header className="flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <button onClick={() => setLeftSidebarOpen((prev) => !prev)} className="cursor-pointer">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="size-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-                />
-              </svg>
+            <button
+              onClick={() => setLeftSidebarOpen((prev) => !prev)}
+              className="cursor-pointer pl-4"
+            >
+              {leftSidebarOpen ? (
+                <div>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="size-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+                    />
+                  </svg>
+                </div>
+              ) : (
+                <div>
+                  {" "}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="size-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                    />
+                  </svg>
+                </div>
+              )}
             </button>
             <NavBar
               isOpen={leftSidebarOpen}
               onClose={() => setLeftSidebarOpen(false)}
             />
-            <Link to="/" className="text-2xl font-bold text-white">
-              StoryHub
+            <Link to="/" className="text-2xl font-bold text-black">
+              Write<span className="!text-blue-500">Side</span>
             </Link>
           </div>
           <div className="flex items-center gap-8">
-            <Link to="/create" className="text-gray-500 flex items-center gap-1">
+            <Search search={openSearch} setOpensearch={setOpensearch}></Search>
+            {/* <input
+              type="text"
+              className="rounded-xl bg-[#d5e5f4] px-4 py-2 outline-none"
+              placeholder="Поиск"
+            /> */}
+            {/* <Link to="/create" className="text-gray-500 flex items-center gap-1">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -70,7 +107,7 @@ function Header() {
                 />
               </svg>
               Написать историю
-            </Link>
+            </Link> */}
             {isAuth && user ? (
               <div>
                 <img
@@ -118,21 +155,21 @@ function Header() {
               className="w-20 h-20 rounded-full border-2 border-gray-300"
             />
             <p className="mt-2 text-lg font-semibold">
-              {user.name || "Писатель"} {/* Отображение имени */}
+              {user.name || "Писатель"}
             </p>
             <p className="text-sm text-gray-500">{user.email}</p>
           </div>
         )}
         <nav className="flex flex-col gap-4 border-b-1 p-2">
-          <Link to="/profile" className="hover:underline">
-            Профиль
-          </Link>
-          <Link to="/profileset" className="hover:underline">
-            Настройки
+          <Link
+            to="/profileset"
+            className="rounded-xl p-2 hover:!bg-[#acc3db] hover:!text-white transition-all"
+          >
+            Настройки профиля
           </Link>
           <button
             onClick={handleLogout}
-            className="text-left text-red-600 hover:underline"
+            className="text-left text-red-600 rounded-xl p-2 hover:!bg-[#acc3db] hover:!text-white transition-all"
           >
             Выйти
           </button>

@@ -1,22 +1,25 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../../firebase/firebaseConfig";
+import { auth, db } from "../../firebase/firebaseConfig";
 import { setUser } from "./authSlice";
+import { doc, getDoc } from "firebase/firestore";
 
 export const loadUser = createAsyncThunk("auth/loadUser", async (_, { dispatch }) => {
   return new Promise((resolve) => {
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const storedUser = JSON.parse(localStorage.getItem("user"));
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        const userData = userDoc.exists() ? userDoc.data() : {};
+
         const updatedUser = {
           uid: user.uid,
           email: user.email,
-          displayName: storedUser?.displayName || user.displayName || "",
-          name: storedUser?.name || user.displayName || "",
-          photoURL: storedUser?.photoURL || user.photoURL || "",
+          displayName: userData.name || user.displayName || "",
+          name: userData.name || user.displayName || "",
+          photoURL: userData.photoURL || user.photoURL || "",
         };
         dispatch(setUser(updatedUser));
-        localStorage.setItem("user", JSON.stringify(updatedUser)); // Синхронизация
+        localStorage.setItem("user", JSON.stringify(updatedUser));
         resolve(updatedUser);
       } else {
         dispatch(setUser(null));

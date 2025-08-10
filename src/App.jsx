@@ -13,6 +13,7 @@ import CreateStory from "./page/CreateStory";
 import Search from "./page/Search";
 import Post from "./page/Post";
 import ProfileSetting from "./page/ProfileSetting";
+import Following from "./page/Following";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/post/:id" element={<Post />} />
         <Route path="/profileset" element={<ProfileSetting />} />
+        <Route path="/following" element={<Following />} />
         <Route path="/create" element={<CreateStory />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="*" element={<NotFound />} />

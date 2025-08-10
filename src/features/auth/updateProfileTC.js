@@ -4,11 +4,11 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { auth, storage, db } from "../../firebase/firebaseConfig";
 import { setUser } from "./authSlice";
 import { message } from "antd";
-import { collection, query, where, getDocs, updateDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, updateDoc, doc } from "firebase/firestore";
 
 export const updateUserProfile = createAsyncThunk(
   "auth/updateUserProfile",
-  async ({ name, avatar }, { dispatch, rejectWithValue }) => {
+  async ({ name, avatar }, { dispatch, rejectWithValue, getState }) => {
     try {
       const user = auth.currentUser;
       if (!user) {
@@ -18,35 +18,43 @@ export const updateUserProfile = createAsyncThunk(
       let photoURL = user.photoURL || "";
       if (avatar) {
         const avatarRef = ref(storage, `avatars/${user.uid}`);
-        await uploadBytes(avatarRef, avatar);
-        photoURL = await getDownloadURL(avatarRef);
+        await uploadBytes(avatarRef, avatar); // Загружаем файл
+        photoURL = await getDownloadURL(avatarRef); // Получаем URL
       }
 
-      await updateProfile(user, {
-        displayName: name || user.displayName,
-        photoURL: photoURL || user.photoURL,
-      });
+      const currentUser = getState().auth.user;
+      const newDisplayName = name || user.displayName;
+      const newPhotoURL = photoURL || user.photoURL;
 
-      // Обновляем все посты пользователя в Firestore
-      const q = query(
-        collection(db, "stories"),
-        where("authorId", "==", user.uid)
-      );
-      const querySnapshot = await getDocs(q);
-      const updatePromises = querySnapshot.docs.map(async (doc) => {
-        await updateDoc(doc.ref, {
-          authorName: name || user.displayName,
-          authorPhoto: photoURL || user.photoURL,
+      if (newDisplayName !== currentUser.displayName || newPhotoURL !== currentUser.photoURL) {
+        await updateProfile(user, {
+          displayName: newDisplayName,
+          photoURL: newPhotoURL,
         });
-      });
-      await Promise.all(updatePromises);
+
+        await updateDoc(doc(db, "users", user.uid), {
+          name: newDisplayName,
+          photoURL: newPhotoURL,
+        });
+
+        if (newDisplayName !== currentUser.displayName) {
+          const q = query(collection(db, "stories"), where("authorId", "==", user.uid));
+          const querySnapshot = await getDocs(q);
+          const updatePromises = querySnapshot.docs.map(async (doc) => {
+            await updateDoc(doc.ref, {
+              authorName: newDisplayName,
+            });
+          });
+          await Promise.all(updatePromises);
+        }
+      }
 
       const updatedUser = {
         uid: user.uid,
         email: user.email,
-        displayName: name || user.displayName,
-        name: name || user.displayName,
-        photoURL: photoURL || user.photoURL,
+        displayName: newDisplayName,
+        name: newDisplayName,
+        photoURL: newPhotoURL,
       };
 
       dispatch(setUser(updatedUser));

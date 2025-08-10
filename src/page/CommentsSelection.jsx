@@ -49,13 +49,13 @@ const CommentsSection = ({ storyId }) => {
       <h3 className="text-xl font-bold mb-4">Комментарии</h3>
 
       <form onSubmit={handleCommentSubmit} className="mb-6">
-       <div
-  contentEditable
-  className="w-full p-3 border border-gray-300 rounded mb-2 min-h-[40px]"
-  placeholder="Оставьте комментарий..." // это не сработает в `div`
-  onInput={(e) => setText(e.currentTarget.textContent)}
-  suppressContentEditableWarning={true}
-></div>
+        <div
+          contentEditable
+          className="w-full p-3 border-b outline-none mb-2 min-h-[40px]"
+          placeholder="Оставьте комментарий..."
+          onInput={(e) => setText(e.currentTarget.textContent)}
+          suppressContentEditableWarning={true}
+        ></div>
 
         <button
           type="submit"

@@ -5,8 +5,8 @@ import { fetchPostById, clearPost } from "../features/auth/postSlice";
 import { getImage } from "../components/getImage";
 import { Skeleton, Avatar } from "antd";
 import CommentsSection from "./CommentsSelection";
-import LikeButton from "./LikeButton";
 import avatarDef from "../assets/avatar-people-user-svgrepo-com.svg";
+import LikeButton from "./LikeButton";
 
 const Post = () => {
   const { id } = useParams();
@@ -22,7 +22,7 @@ const Post = () => {
   if (status === "loading") {
     return (
       <div className="max-w-3xl mx-auto p-4 justify-items-center pt-24">
-        <Skeleton active title paragraph={{ rows: 2 }} />
+        <Skeleton active title paragraph={{ rows: 1 }} />
         <Skeleton avatar={<Avatar />} />
         <Skeleton.Image
           active
@@ -41,7 +41,7 @@ const Post = () => {
 
   return (
     <div className="max-w-3xl mx-auto p-4 pt-24">
-      <h1 className="!text-5xl font-bold mb-2">{story.title}</h1>
+      <h1 className="text-3xl font-bold mb-4 text-[#333333] ">{story.title}</h1>
       <div className="items-center flex mb-3 justify-between">
         <Link to="/profile" className="flex items-center gap-4 ">
           <img
@@ -100,12 +100,16 @@ const Post = () => {
       </span>
       <div className="prose max-w-none pt-4">
         <div className="mb-10">
-          <p className="text-gray-700 text-2xl">{firstText}</p>
-          <img
-            src={getImage(story.filename)}
-            className="rounded-lg mt-4"
-            alt="story"
-          />
+          <p className="text-gray-700 text-lg">{firstText}</p>
+        {story.filename && (
+      <div>
+        <img
+          className="rounded-xl h-auto"
+          src={getImage(story.filename)}
+          alt="cover"
+        />
+      </div>
+    )}
         </div>
       </div>
       <CommentsSection storyId={id} />
@@ -114,3 +118,97 @@ const Post = () => {
 };
 
 export default Post;
+
+
+
+
+// import React, { useEffect, useRef } from "react";
+// import { useParams } from "react-router-dom";
+// import { db } from "../firebase/firebaseConfig";
+// import { doc, getDoc } from "firebase/firestore";
+
+// const Post = () => {
+//   const { id } = useParams();
+//   const [post, setPost] = React.useState(null);
+//   const commentsRef = useRef(null);
+
+//   useEffect(() => {
+//     const fetchPost = async () => {
+//       const postDoc = await getDoc(doc(db, "stories", id));
+//       if (postDoc.exists()) {
+//         setPost({ id: postDoc.id, ...postDoc.data() });
+//       }
+//     };
+//     fetchPost();
+//   }, [id]);
+
+//   const scrollToComments = () => {
+//     commentsRef.current?.scrollIntoView({ behavior: "smooth" });
+//   };
+
+//   if (!post) {
+//     return <div className="text-center mt-20 text-gray-500">Загрузка...</div>;
+//   }
+
+//   return (
+//     <div className="pt-24 min-h-screen bg-[#f5f7fa]">
+//       <div className="max-w-3xl mx-auto px-4 py-10">
+//         <h1 className="text-3xl font-bold mb-4 text-[#333333]">{post.title}</h1>
+//         {post.blocks.map((block, index) => (
+//           <div key={index} className="card mb-4">
+//             {block.type === "text" && (
+//               <div
+//                 className="mb-4 text-lg"
+//                 dangerouslySetInnerHTML={{ __html: block.content }}
+//               />
+//             )}
+//             {block.type === "image" && (
+//               <img
+//                 src={post.filename || ""}
+//                 alt="post-image"
+//                 className="w-full max-h-96 object-contain rounded shadow"
+//               />
+//             )}
+//           </div>
+//         ))}
+
+//         <div
+//           className="flex items-center gap-2 mb-4 cursor-pointer text-[#6b7280] hover:text-[#acc3db]"
+//           onClick={scrollToComments}
+//         >
+//           <svg
+//             xmlns="http://www.w3.org/2000/svg"
+//             fill="none"
+//             viewBox="0 0 24 24"
+//             strokeWidth={1.5}
+//             stroke="currentColor"
+//             className="w-6 h-6"
+//           >
+//             <path
+//               strokeLinecap="round"
+//               strokeLinejoin="round"
+//               d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+//             />
+//           </svg>
+//           <span>Комментарии ({post.comments?.length || 0})</span>
+//         </div>
+
+//         <div ref={commentsRef} id="comments-section" className="mt-8">
+//           <h2 className="text-2xl font-semibold mb-4 text-[#333333]">Комментарии</h2>
+//           {post.comments && post.comments.length > 0 ? (
+//             post.comments.map((comment, index) => (
+//               <div key={index} className="card mb-4 p-4">
+//                 <p className="text-[#333333]">{comment.text}</p>
+//                 <small className="text-[#6b7280]">{comment.author}</small>
+//               </div>
+//             ))
+//           ) : (
+//             <p className="text-[#6b7280]">Пока нет комментариев.</p>
+//           )}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Post;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUserProfile } from "../features/auth/updateProfileTC";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +9,10 @@ const ProfileSetting = () => {
   const [name, setName] = useState(user?.name || "");
   const [avatar, setAvatar] = useState(null);
   const [preview, setPreview] = useState(user?.photoURL || avatarDef);
+  const [error, setError] = useState("");
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem("theme") === "dark";
+  });
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -16,21 +20,38 @@ const ProfileSetting = () => {
     const file = e.target.files[0];
     if (file) {
       setAvatar(file);
-      setPreview(URL.createObjectURL(file)); 
+      setPreview(URL.createObjectURL(file));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
     if (!name.trim()) {
-      alert("Пожалуйста, введите имя");
+      setError("Пожалуйста, введите имя");
       return;
     }
+
     const resultAction = await dispatch(updateUserProfile({ name, avatar }));
     if (updateUserProfile.fulfilled.match(resultAction)) {
-      navigate("/profile"); 
+      navigate("/profile");
+    } else if (resultAction.error) {
+      setError(
+        "Не удалось обновить профиль. Проверьте загрузку аватара или попробуйте снова."
+      );
     }
   };
+
+ useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [darkMode]);
 
   if (!user) {
     return <div className="text-center mt-20 text-gray-500">Загрузка...</div>;
@@ -67,7 +88,19 @@ const ProfileSetting = () => {
         >
           Сохранить
         </button>
+        {error && <p className="text-red-500 font-medium mt-2">{error}</p>}
       </form>
+       <div className="mb-6">
+        <label className="flex items-center gap-4">
+          <span className="text-lg">Тёмная тема</span>
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className="px-4 py-2 bg-card text-text border rounded shadow"
+          >
+            {darkMode ? "Отключить" : "Включить"}
+          </button>
+        </label>
+      </div>
     </div>
   );
 };

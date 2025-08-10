@@ -1,8 +1,9 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../firebase/firebaseConfig";
+import { auth, db } from "../../firebase/firebaseConfig";
 import { setUser } from "./authSlice";
 import { message } from "antd";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
 export const createUser = createAsyncThunk(
   "auth/createUser",
@@ -10,6 +11,14 @@ export const createUser = createAsyncThunk(
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        email: user.email,
+        name: user.displayName || "",
+        photoURL: user.photoURL || "",
+        createdAt: serverTimestamp(),
+      });
 
       dispatch(
         setUser({
@@ -20,7 +29,6 @@ export const createUser = createAsyncThunk(
           photoURL: user.photoURL || "",
         })
       );
-
       message.success("Регистрация прошла успешно!");
       return user;
     } catch (error) {

@@ -7,7 +7,7 @@ const NotFound = () => {
     navigate("/", { replace: true });
   };
   return (
-    <div>
+    <div className="pt-24">
       <h1>404</h1>
       <button onClick={handleClick}>Вернутся на главную страницу</button>
     </div>

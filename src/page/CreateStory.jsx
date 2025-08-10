@@ -1,3 +1,4 @@
+// CreateStory.jsx
 import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSelector } from "react-redux";
@@ -12,10 +13,10 @@ export default function CreateStory() {
   const user = useSelector((state) => state.auth.user);
   const [title, setTitle] = useState("");
   const [blocks, setBlocks] = useState([{ type: "text", content: "" }]);
-  const [content, setContent] = useState("");
   const [success, setSuccess] = useState(false);
   const [showTools, setShowTools] = useState(false);
   const [error, setError] = useState("");
+  const [imagePreview, setImagePreview] = useState(null);
 
   const handleTextChange = (index, text) => {
     const updated = [...blocks];
@@ -34,12 +35,15 @@ export default function CreateStory() {
     setBlocks(updated);
   };
 
+  const handleImageSelect = (file) => {
+    setImagePreview(file);
+  };
+
   useEffect(() => {
     const saved = localStorage.getItem(DRAFT_KEY);
     if (saved) {
       const { title, blocks } = JSON.parse(saved);
       setTitle(title || "");
-      setContent("");
       setBlocks(blocks || [{ type: "text", content: "" }]);
     }
   }, []);
@@ -51,13 +55,6 @@ export default function CreateStory() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
-    const form_data = new FormData();
-    console.log(e.target[3].files);
-
-    form_data.append("file", e?.target[3]?.files[0]);
-    const file = form_data;
-    console.log(form_data.get("file"));
 
     const hasContent = blocks.some(
       (b) => b.type === "text" && b.content.trim()
@@ -73,20 +70,20 @@ export default function CreateStory() {
       return;
     }
 
-    if (!file) {
-      setError("Добавьте изображение.");
-      return;
-    }
-
-    console.log("Запрос начался");
     try {
-      const filename = await instanse.post("/api/upload", form_data);
+      let filename = null;
+      if (imagePreview) {
+        const form_data = new FormData();
+        form_data.append("file", imagePreview);
+        const response = await instanse.post("/api/upload", form_data);
+        filename = response.data.filename;
 
-      if (!filename?.data?.filename) {
-        setError("Файл не загрузился. Попробуйте снова.");
-        return;
+        if (!filename) {
+          setError("Файл не загрузился. Попробуйте снова.");
+          return;
+        }
+        insertImageAfter(blocks.length - 1, filename);
       }
-      console.log("Filename", filename.data.filename);
 
       await addDoc(collection(db, "stories"), {
         title,
@@ -94,42 +91,23 @@ export default function CreateStory() {
         authorId: user.uid,
         authorName: user.name || "Аноним",
         createdAt: serverTimestamp(),
-        filename: filename.data.filename,
+        filename,
       });
 
       setTitle("");
       setBlocks([{ type: "text", content: "" }]);
+      setImagePreview(null);
       localStorage.removeItem(DRAFT_KEY);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       console.error("Ошибка при публикации:", err);
+      setError("Ошибка при публикации. Попробуйте снова.");
     }
   };
 
   return (
     <div className="relative min-h-screen pt-24">
-      <div className="flex gap-4 m-3">
-        <select>
-          <option>Новости</option>
-          <option>Рассказ</option>
-          <option>Сценарий</option>
-        </select>
-        <label className="flex gap-2">
-          <input type="checkbox" />
-          Ужасы
-        </label>
-        <label className="flex gap-2">
-          <input type="checkbox" />
-          Фантастика
-        </label>
-        <label className="flex gap-2">
-          <input type="checkbox" />
-          Роман
-        </label>
-       
-      </div>
-
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto p-6 space-y-6">
         <div className="flex items-center gap-10">
           <input
@@ -169,19 +147,34 @@ export default function CreateStory() {
                   {block.content}
                 </div>
               )}
-
+              {imagePreview && (
+                <div className="mt-4 p-4 bg-gray-50 rounded-2xl flex flex-col">
+                  <img
+                    src={URL.createObjectURL(imagePreview)}
+                    alt="Preview"
+                    className="w-full max-h-96 object-contain"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setImagePreview(null)}
+                    className="!text-gray-500 hover:!text-black transition-all"
+                  >
+                    Удалить изображение
+                  </button>
+                </div>
+              )}
               {block.type === "image" && (
                 <img
                   src={block.src}
                   alt="user-upload"
-                  className="w-full max-h-96 object-contain rounded shadow"
+                  className="w-full max-h-96 object-contain"
                 />
               )}
 
               <TextEditorTools
                 showTools={showTools}
                 setShowTools={setShowTools}
-                insertImage={(url) => insertImageAfter(i, url)}
+                insertImage={handleImageSelect}
               />
             </div>
           ))}
