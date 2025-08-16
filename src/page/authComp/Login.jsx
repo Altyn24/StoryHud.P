@@ -39,7 +39,7 @@ function Login() {
     <div className="flex justify-center items-center h-screen bg-white">
       <div className="max-w-md w-full p-8 shadow-md rounded">
         <h1 className="text-3xl font-bold text-center mb-4 text-gray-800">
-          StoryHub
+          WriteSide
         </h1>
         <p className="text-center text-gray-600 mb-6">Войдите в аккаунт</p>
         <form onSubmit={handleSubmit} className="space-y-4 mb-5">

@@ -16,7 +16,9 @@ const SignUp = () => {
       return;
     }
 
-    const resultAction = await dispatch(createUser({ email, password })).unwrap();
+    const resultAction = await dispatch(
+      createUser({ email, password })
+    ).unwrap();
     if (resultAction) {
       navigate("/profileset");
     }
@@ -26,29 +28,31 @@ const SignUp = () => {
     <div className="flex justify-center items-center h-screen bg-white">
       <div className="max-w-md w-full p-8 shadow-md rounded">
         <h1 className="text-3xl font-bold text-center mb-4 text-gray-800">
-          StoryHub
+          WriteSide
         </h1>
         <p className="text-center text-gray-600 mb-6">Создайте аккаунт</p>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full p-3 border border-gray-300 rounded"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+        <form onSubmit={handleSubmit} className="space-y-4 mb-5">
+          <div className="mb-5">
+            <input
+              type="email"
+              placeholder="Email"
+              className="w-full p-3 border-b border-black"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           <input
             type="password"
             placeholder="Пароль"
-            className="w-full p-3 border border-gray-300 rounded"
+            className="w-full p-3 border-b border-black"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-          />
+            />
+            </div>
           <button
             type="submit"
-            className="w-full p-3 rounded-2xl border-3 border-red-600 hover:bg-red-500 hover:text-white"
+            className="w-full !text-white bg-green-500 p-2 rounded-md"
           >
             Зарегистрироваться
           </button>

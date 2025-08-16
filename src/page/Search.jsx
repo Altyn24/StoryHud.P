@@ -1,47 +1,33 @@
-import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
-const Search = ({ search, setSearch }) => {
-  const [openSearch, setOpensearch] = useState(false);
+export default function SearchResults() {
+  const searchQuery = useSelector((state) => state.search);
+  const stories = useSelector((state) => state.stories.items);
 
-  const cotigories = ["Всё", "Статьи", "Рассказы", "Посты"];
-  const handleSearch = () => {};
+  if (!searchQuery.trim()) return null;
+
+  const filtered = stories.filter((story) =>
+    story.title?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
-    <div className="">
-    
-      {/* <input
-        type="text"
-        className="rounded-xl bg-[#d5e5f4] px-4 py-2 outline-none"
-        placeholder="Поиск"
-      /> */}
-      
-      
-      <h3 className="!text-2xl text-center">Поиск</h3>
-      <div className="justify-items-center rounded-xl shadow-2xl py-3">
-        <div className="h-[300px] mt-5">
-          <input
-            onChange={(e) => setSearch(e.target.value)}
-            type="text"
-            className="bg-gray-100 py-2 px-4 rounded-2xl w-sm outline-none"
-            placeholder="Поиск"
-            // onFocus={()=> setOpensearch(openSearch)}
-          />
-          <div className="flex gap-7 mt-3 justify-center">
-            {cotigories.map((item) => (
-              <span
-                key={item}
-                className={`mb-4 cursor-pointer text-gray-500 hover:text-red-400 transition-all ${
-                  cotigories === item ? "hover:text-blue-600" : ""
-                }`}
-              >
-                {item}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
+    <div className="absolute top-full p-1 w-full bg-white shadow-lg border border-gray-200 z-40 max-h-100 overflow-y-auto">
+      <div className="p-3 text-gray-400">Результат поиска</div>
+      {filtered.length > 0 ? (
+        filtered.map((story) => (
+          <Link
+            key={story.id}
+            to={`/post/${story.id}`}
+            className="px-4 py-2 hover:bg-gray-100 flex border-gray-400 border-b m-3"
+          >
+            {story.title}
+            {/* {story.filename} */}
+          </Link>
+        ))
+      ) : (
+        <div className="p-4 text-gray-500">Ничего не найдено</div>
+      )}
     </div>
   );
-};
-
-export default Search;
+}

@@ -18,8 +18,8 @@ export const updateUserProfile = createAsyncThunk(
       let photoURL = user.photoURL || "";
       if (avatar) {
         const avatarRef = ref(storage, `avatars/${user.uid}`);
-        await uploadBytes(avatarRef, avatar); // Загружаем файл
-        photoURL = await getDownloadURL(avatarRef); // Получаем URL
+        await uploadBytes(avatarRef, avatar);
+        photoURL = await getDownloadURL(avatarRef);
       }
 
       const currentUser = getState().auth.user;

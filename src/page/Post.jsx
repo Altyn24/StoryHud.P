@@ -43,15 +43,16 @@ const Post = () => {
     <div className="max-w-3xl mx-auto p-4 pt-24">
       <h1 className="text-3xl font-bold mb-4 text-[#333333] ">{story.title}</h1>
       <div className="items-center flex mb-3 justify-between">
-        <Link to="/profile" className="flex items-center gap-4 ">
-          <img
+        <Link to={`/channel/${story.authorId}`} className="flex items-center gap-2"> <img
             src={user?.photoURL || avatarDef}
             className="w-10 h-10 rounded-full border-gray-400 border-2"
-          />
+          />{story.authorName}</Link>
+        {/* <Link to="/profile" className="flex items-center gap-4 ">
+         
           <p className="font-bold text-1xl">{user?.name || "Писатель"}</p>
-        </Link>
+        </Link> */}
         <button
-          className="rounded-3xl border-1 border-black px-3 py-2 hover:bg-black hover:!text-white transition"
+          className="rounded-3xl border-1 border-black px-3 py-2 hover:bg-black hover:!text-white transition-colors"
           type="submit"
         >
           Подписаться
@@ -101,15 +102,15 @@ const Post = () => {
       <div className="prose max-w-none pt-4">
         <div className="mb-10">
           <p className="text-gray-700 text-lg">{firstText}</p>
-        {story.filename && (
-      <div>
-        <img
-          className="rounded-xl h-auto"
-          src={getImage(story.filename)}
-          alt="cover"
-        />
-      </div>
-    )}
+          {story.filename && (
+            <div>
+              <img
+                className="rounded-xl h-auto"
+                src={getImage(story.filename)}
+                alt="cover"
+              />
+            </div>
+          )}
         </div>
       </div>
       <CommentsSection storyId={id} />
@@ -118,9 +119,6 @@ const Post = () => {
 };
 
 export default Post;
-
-
-
 
 // import React, { useEffect, useRef } from "react";
 // import { useParams } from "react-router-dom";

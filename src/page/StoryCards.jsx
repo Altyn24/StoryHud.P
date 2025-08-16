@@ -1,32 +1,26 @@
-import { getImage } from "../components/getImage.js";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import avatarDef from "../assets/avatar-people-user-svgrepo-com.svg";
 import LikeButton from "./LikeButton.jsx";
-import { useDispatch } from "react-redux";
-import { fetchPostById, clearPost } from "../features/auth/postSlice";
-import { useEffect } from "react";
+import { getImage } from "../components/getImage.js";
+import { useSelector } from "react-redux";
 
 const StoryCards = ({ story }) => {
-  const firstText = story.blocks.find(
+  const firstText = story.blocks?.find(
     (b) => b.type === "text" && b.content.trim()
   )?.content;
-  const { id } = useParams();
-
-  const dispatch = useDispatch();
-  
-  useEffect(() => {
-    dispatch(fetchPostById(id));
-    return () => dispatch(clearPost());
-  }, [dispatch, id]);
+  const user = useSelector((state) => state.auth.user);
 
   return (
-    <div className="bg-white shadow-xl p-4 mb-4 hover:bg-gray-50 transition">
+    <div className="bg-white shadow-xl p-4 mb-4 hover:bg-gray-50 transition rounded-2xl">
       <div className="flex items-center justify-between">
-        <Link to={`/profile`} className="flex gap-1 items-center">
+        <Link
+          to={`/channel/${story.authorId}`}
+          className="flex items-center gap-2"
+        >
           <img
-            src={story.authorPhoto || avatarDef}
+            src={user?.photoURL || story.authorPhoto || avatarDef}
+            className="w-10 h-10 rounded-full border-gray-400 border-2"
             alt="avatar"
-            className="w-10 h-10 rounded-full"
           />
           <p className="text-md font-semibold text-gray-800 hover:underline">
             {story.authorName || "Неизвестный автор"}
@@ -41,16 +35,16 @@ const StoryCards = ({ story }) => {
 
       <Link to={`/post/${story.id}`} className="block">
         <div className="flex justify-between items-start gap-4">
-          <div className="flex-1 mt-3">
-            <h3 className="text-lg font-bold mb-1">{story.title}</h3>
-            <div className="">
-              <p className="text-gray-700 line-clamp-2">{firstText}</p>
+          <div className="flex-1 mt-3 sm:w-32">
+            <h3 className="text-2xl font-bold mb-1">{story.title}</h3>
+            <div>
+              <p className="text-gray-700 line-clamp-2">{firstText || "Без описания"}</p>
             </div>
           </div>
           {story.filename && (
             <div className="justify-center">
               <img
-                className="rounded-xl w-[330px] h-auto"
+                className="rounded-xl w-[200px] h-auto"
                 src={getImage(story.filename)}
                 alt="cover"
               />
@@ -59,7 +53,7 @@ const StoryCards = ({ story }) => {
         </div>
       </Link>
       <br />
-    <LikeButton storyId={id}/>
+      <LikeButton storyId={story.id} />
     </div>
   );
 };

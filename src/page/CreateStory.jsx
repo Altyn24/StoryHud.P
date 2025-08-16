@@ -1,4 +1,3 @@
-// CreateStory.jsx
 import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSelector } from "react-redux";
@@ -152,7 +151,7 @@ export default function CreateStory() {
                   <img
                     src={URL.createObjectURL(imagePreview)}
                     alt="Preview"
-                    className="w-full max-h-96 object-contain"
+                    className="w-full max-h-70 object-contain"
                   />
                   <button
                     type="button"
@@ -170,12 +169,13 @@ export default function CreateStory() {
                   className="w-full max-h-96 object-contain"
                 />
               )}
-
-              <TextEditorTools
-                showTools={showTools}
-                setShowTools={setShowTools}
-                insertImage={handleImageSelect}
-              />
+              <div className="">
+                <TextEditorTools
+                  showTools={showTools}
+                  setShowTools={setShowTools}
+                  insertImage={handleImageSelect}
+                />
+              </div>
             </div>
           ))}
         </div>
