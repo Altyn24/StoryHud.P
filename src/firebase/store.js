@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authSlice from "../features/auth/authSlice.js";
-import storiesReducer from "../features/auth/storiesSlice.js";
+import storiesReducer from "../features/stories/storiesSlice.js";
 import postReducer from "../features/auth/postSlice.js";
 
 export const store = configureStore({

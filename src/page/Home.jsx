@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { fetchStories } from "../features/auth/storiesSlice";
+import { fetchStories } from "../features/stories/storiesSlice";
 import StoryCard from "./StoryCards";
 import { Flex, Spin } from "antd";
 import Search from "./Search";

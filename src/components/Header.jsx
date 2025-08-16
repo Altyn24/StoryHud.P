@@ -85,7 +85,7 @@ function Header({ openSearch, setOpensearch }) {
             </Link>
           </div>
           <div className="flex items-center gap-8">
-            <Search search={openSearch} setOpensearch={setOpensearch}></Search>
+            {/* <Search search={openSearch} setOpensearch={setOpensearch}></Search> */}
             {/* <input
               type="text"
               className="rounded-xl bg-[#d5e5f4] px-4 py-2 outline-none"
