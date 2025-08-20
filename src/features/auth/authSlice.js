@@ -18,7 +18,7 @@ const authSlice = createSlice({
     setUser: (state, action) => {
       const { uid, email, displayName, name, photoURL } = action.payload || {};
       state.user = { uid, email, displayName, name, photoURL };
-      state.isAuth = !!uid; // Устанавливаем isAuth в зависимости от наличия uid
+      state.isAuth = !!uid;
     },
     logout: (state) => {
       state.user = null;
@@ -57,7 +57,7 @@ const authSlice = createSlice({
       })
       .addCase(updateUserProfile.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload; // Обновляем user из payload
+        state.user = action.payload;
       })
       .addCase(updateUserProfile.rejected, (state, action) => {
         state.loading = false;

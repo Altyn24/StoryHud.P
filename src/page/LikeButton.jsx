@@ -1,47 +1,88 @@
-import React, { useEffect, useState } from "react";
-import { toggleLike } from "../features/auth/toggleLike";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { message } from "antd";
+import { toggleLike } from "../features/stories/storiesSlice";
 import { getLikeCount } from "../features/auth/getLikeCount";
-import { useSelector } from "react-redux";
 
 const LikeButton = ({ storyId }) => {
-  const user = useSelector((state) => state.auth.user);
-  const [liked, setLiked] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [likeCount, setLikeCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const user = useSelector((state) => state.auth.user);
+  const story = useSelector((state) =>
+    state.stories.items.find((s) => s.id === storyId)
+  );
+  const isLiked = story?.likedByUser || false;
 
   const fetchLikes = async () => {
-    const count = await getLikeCount(storyId);
-    setLikeCount(count);
-  };
-
-  const handleLike = async () => {
-    if (!user) return alert("Нужно войти, чтобы лайкать");
-
-    const result = await toggleLike(storyId, user.uid);
-    setLiked(result);
-    fetchLikes();
+    if (!storyId) {
+      console.warn("storyId is undefined in LikeButton");
+      setLikeCount(0);
+      return;
+    }
+    setLoading(true);
+    try {
+      const count = await getLikeCount(storyId);
+      setLikeCount(count);
+    } catch (error) {
+      console.error("Ошибка при загрузке лайков:", error);
+      setLikeCount(0);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchLikes();
   }, [storyId]);
 
+  const handleLike = async () => {
+    if (!user) {
+      message.warning("Войдите в аккаунт, чтобы поставить лайк");
+      navigate("/login");
+      return;
+    }
+    if (!storyId) {
+      message.error("Невозможно поставить лайк: история не найдена");
+      return;
+    }
+    setLoading(true);
+    try {
+      await dispatch(toggleLike({ storyId, userId: user.uid })).unwrap();
+      await fetchLikes();
+      message.success(isLiked ? "Лайк удалён" : "Лайк поставлен");
+    } catch (error) {
+      message.error("Ошибка при обновлении лайка");
+      console.error("Ошибка лайка:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <button onClick={handleLike} className="flex items-center gap-1 mt-4">
+    <button
+      onClick={handleLike}
+      disabled={loading || !storyId}
+      className={`flex items-center gap-2 text-gray-600 hover:text-red-500 disabled:opacity-50 ${
+        isLiked ? "text-red-500" : ""
+      }`}
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        fill="none"
+        fill={isLiked ? "red" : "none"}
         viewBox="0 0 24 24"
-        strokeWidth={1.5}
         stroke="currentColor"
-        className="size-6"
+        className="w-6 h-6"
       >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
-          d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+          strokeWidth={2}
+          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
         />
       </svg>
-
       <span>{likeCount}</span>
     </button>
   );

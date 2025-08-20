@@ -2,14 +2,13 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase/firebaseConfig";
 
-export const fetchStories = createAsyncThunk(
-  "stories/fetchStories",
+export const fetchArticles = createAsyncThunk(
+  "articles/fetchArticles",
   async () => {
-    const querySnapshot = await getDocs(collection(db, "stories"));
+    const querySnapshot = await getDocs(collection(db, "articles"));
 
     return querySnapshot.docs.map((doc) => {
       const data = doc.data();
-
       return {
         id: doc.id,
         ...data,
@@ -19,8 +18,8 @@ export const fetchStories = createAsyncThunk(
   }
 );
 
-const storiesSlice = createSlice({
-  name: "stories",
+const articlesSlice = createSlice({
+  name: "articles",
   initialState: {
     items: [],
     status: "idle",
@@ -29,18 +28,18 @@ const storiesSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchStories.pending, (state) => {
+      .addCase(fetchArticles.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(fetchStories.fulfilled, (state, action) => {
+      .addCase(fetchArticles.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.items = action.payload;
       })
-      .addCase(fetchStories.rejected, (state, action) => {
+      .addCase(fetchArticles.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       });
   },
 });
 
-export default storiesSlice.reducer;
+export default articlesSlice.reducer;

@@ -1,45 +1,45 @@
-import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
-const Search = ({ search, setSearch }) => {
-  const [openSearch, setOpensearch] = useState(false);
+export default function SearchResults() {
+  const searchQuery = useSelector((state) => state.search);
+  const stories = useSelector((state) => state.stories.items);
 
-  const cotigories = ["Всё", "Статьи", "Рассказы", "Посты"];
-  const handleSearch = () => {};
+  if (!searchQuery.trim()) return null;
+
+  const filtered = stories.filter((story) => {
+    const titleMatch = story.title?.toLowerCase().includes(searchQuery.toLowerCase()) || false;
+    const textMatch = story.text?.toLowerCase().includes(searchQuery.toLowerCase()) || false;
+    return titleMatch || textMatch;
+  });
 
   return (
-    <div className="">
-      <input
-        type="text"
-        className="rounded-xl bg-[#d5e5f4] px-4 py-2 outline-none"
-        placeholder="Поиск"
-      />
-      
-      
-      {/* <h3 className="!text-2xl text-center">Поиск</h3> */}
-      {/* <div className="justify-items-center rounded-xl shadow-2xl py-3">
-        <div className="h-[300px] mt-5">
-          <input
-            onChange={(e) => setSearch(e.target.value)}
-            type="text"
-            className="bg-gray-100 py-2 px-4 rounded-2xl w-sm outline-none"
-            placeholder="Поиск"
-          />
-          <div className="flex gap-7 mt-3 justify-center">
-            {cotigories.map((item) => (
-              <span
-                key={item}
-                className={`mb-4 cursor-pointer text-gray-500 hover:text-red-400 transition-all ${
-                  cotigories === item ? "hover:text-blue-600" : ""
-                }`}
-              >
-                {item}
+    <AnimatePresence>
+      <motion.div
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: -20, opacity: 0 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+        className="absolute top-full left-0 w-full rounded-md bg-white shadow-xl border border-gray-300 z-40 max-h-80 overflow-y-auto"
+      >
+        <div className="px-4 py-2 text-gray-500 bg-gray-50">Результат поиска</div>
+        {filtered.length > 0 ? (
+          filtered.map((story) => (
+            <Link
+              key={story.id}
+              to={`/post/${story.id}`}
+              className="flex items-center px-4 py-2 hover:bg-gray-100 transition-colors duration-200 border-b border-gray-200 last:border-b-0"
+            >
+              <span className="text-sm sm:text-base text-gray-800">
+                {story.title ? story.title : story.text?.slice(0, 50) + (story.text.length > 50 ? "..." : "")}
               </span>
-            ))}
-          </div>
-        </div>
-      </div> */}
-    </div>
+            </Link>
+          ))
+        ) : (
+          <div className="px-4 py-3 text-gray-600">Ничего не найдено</div>
+        )}
+      </motion.div>
+    </AnimatePresence>
   );
-};
-
-export default Search;
+}
