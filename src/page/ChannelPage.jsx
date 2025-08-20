@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchOrCreateChannel,
@@ -9,44 +9,64 @@ import {
   fetchFollowers,
 } from "../features/auth/channelSlice";
 import { useParams, useNavigate } from "react-router-dom";
-import { Flex, Spin } from "antd";
+import { Flex, Spin, message } from "antd";
 import StoryCards from "./StoryCards";
 import avatarDef from "../assets/avatar-people-user-svgrepo-com.svg";
-import { message } from "antd";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase/firebaseConfig";
 
 export default function ChannelPage() {
   const { uid } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const { channel, posts, loading, error, following, followers } = useSelector(
     (state) => state.channel
   );
-  const user = useSelector((state) => state.auth.user);
+  const currentUser = useSelector((state) => state.auth.user);
+  const [channelOwner, setChannelOwner] = useState(null);
 
   useEffect(() => {
-    if (uid) {
-      dispatch(fetchOrCreateChannel(uid));
-      dispatch(fetchUserPosts(uid));
-      if (user?.uid) {
-        dispatch(fetchFollowing(user.uid));
+    async function loadChannelOwner() {
+      if (uid === currentUser?.uid) {
+        setChannelOwner(currentUser);
+      } else {
+        const docSnap = await getDoc(doc(db, "users", uid));
+        if (docSnap.exists()) {
+          setChannelOwner(docSnap.data());
+        } else {
+          setChannelOwner(null);
+        }
       }
-      dispatch(fetchFollowers(uid));
     }
-  }, [uid, dispatch, user]);
+    loadChannelOwner();
+  }, [uid, currentUser]);
+
+  useEffect(() => {
+    if (!uid) return;
+
+    dispatch(fetchOrCreateChannel(uid));
+    dispatch(fetchUserPosts(uid));
+
+    if (currentUser?.uid) {
+      dispatch(fetchFollowing(currentUser.uid));
+    }
+    dispatch(fetchFollowers(uid));
+  }, [uid, currentUser, dispatch]);
 
   const handleFollow = () => {
-    if (!user) {
+    if (!currentUser) {
       message.warning("Войдите в аккаунт, чтобы подписаться");
       navigate("/login");
       return;
     }
-    dispatch(followUser({ followerId: user.uid, followedId: uid }))
+    dispatch(followUser({ followerId: currentUser.uid, followedId: uid }))
       .then(() => message.success("Вы подписались!"))
       .catch(() => message.error("Ошибка при подписке"));
   };
 
   const handleUnfollow = () => {
-    dispatch(unfollowUser({ followerId: user.uid, followedId: uid }))
+    dispatch(unfollowUser({ followerId: currentUser.uid, followedId: uid }))
       .then(() => message.success("Вы отписались"))
       .catch(() => message.error("Ошибка при отписке"));
   };
@@ -56,7 +76,7 @@ export default function ChannelPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <Flex aling="center" gap="middle">
+        <Flex align="center" gap="middle">
           <Spin size="large" />
         </Flex>
       </div>
@@ -71,33 +91,34 @@ export default function ChannelPage() {
     );
   }
 
-  if (!channel) {
+  if (!channelOwner) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <p className="text-lg text-gray-600"></p>
+        <p className="text-lg text-gray-600">Канал не найден</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-screen-xl container mx-auto p-4 sm:p-6 pt-30">
-      <div className="pt-10">
-        {user.name && (
-          <div>
+    <div className="">
+      <div className="max-w-screen-xl container mx-auto p-4 sm:p-6 pt-30">
+        <div className="pt-10">
+          <div className="">
             <div className="flex justify-between items-center">
               <div className="m-2 md:flex">
                 <img
-                  src={user.photoURL || avatarDef}
+                  src={channelOwner.photoURL || avatarDef}
                   className="h-20 w-20 rounded-full"
+                  alt="Аватар"
                 />
-                <div className="">
-                  <h1 className="text-3xl">{user.name}</h1>
+                <div>
+                  <h1 className="text-3xl">{channelOwner.name}</h1>
                   <div className="flex gap-4 text-sm text-gray-600">
                     <span>Подписчики: {followers.length}</span>
                   </div>
                 </div>
               </div>
-              {user?.uid !== uid && (
+              {currentUser?.uid !== uid && (
                 <button
                   onClick={isFollowing ? handleUnfollow : handleFollow}
                   className={`cursor-pointer rounded-3xl border-1 border-black px-3 py-2 hover:bg-black hover:!text-white transition-colors ${
@@ -107,33 +128,34 @@ export default function ChannelPage() {
                   {isFollowing ? "Отписаться" : "Подписаться"}
                 </button>
               )}
-            </div>{" "}
-            <p className="text-gray-500 text-sm">{user.email}</p>
+            </div>
+            <p className="text-gray-500 text-sm">{channelOwner.email}</p>
             <p className="text-gray-600 mb-4">
-              {channel.description || "Описание отсутствует"}
+              {channel?.description || "Описание отсутствует"}
             </p>
           </div>
-        )}
-      </div>
-      {posts.length === 0 ? (
-        <div className="bg-gray-100 p-6 rounded-md text-center text-gray-600">
-          <p>Истории отсутствуют</p>
-          {user?.uid === uid && (
+        </div>
+
+        {posts.length === 0 ? (
+          <div className="bg-gray-100 p-6 rounded-md text-center text-gray-600">
+            <p>Истории отсутствуют</p>
+            {/* {currentUser?.uid === uid && (
             <button
               onClick={() => navigate("/create")}
               className="mt-4 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
             >
               Написать первую историю
             </button>
-          )}
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {posts.map((story) => (
-            <StoryCards key={story.id} story={story} />
-          ))}
-        </div>
-      )}
+          )} */}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {posts.map((story) => (
+              <StoryCards key={story.id} story={story} />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

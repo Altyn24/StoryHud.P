@@ -1,184 +1,246 @@
 import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSelector } from "react-redux";
-import TextEditorTools from "./TextEditorTools";
 import { db } from "../firebase/firebaseConfig";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { instanse } from "./instans/instans";
+import TextEditorTools from "./TextEditorTools";
 
-const DRAFT_KEY = "storyhub_blocks_draft";
+const DRAFT_KEY = "storyhub_draft";
 
 export default function CreateStory() {
   const user = useSelector((state) => state.auth.user);
-  const [title, setTitle] = useState("");
-  const [blocks, setBlocks] = useState([{ type: "text", content: "" }]);
+  const [content, setContent] = useState({ title: null, text: "", images: [] });
   const [success, setSuccess] = useState(false);
   const [showTools, setShowTools] = useState(false);
   const [error, setError] = useState("");
-  const [imagePreview, setImagePreview] = useState(null);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const editorRef = useRef(null);
 
-  const handleTextChange = (index, text) => {
-    const updated = [...blocks];
-    updated[index].content = text;
-    setBlocks(updated);
+  const handleTextChange = (e) => {
+    const newText = e.target.innerText;
+    setContent((prev) => ({ ...prev, text: newText }));
   };
 
-  const insertImageAfter = (index, url) => {
-    const updated = [...blocks];
-    updated.splice(
-      index + 1,
-      0,
-      { type: "image", src: url },
-      { type: "text", content: "" }
-    );
-    setBlocks(updated);
+  const handleTitleChange = (e) => {
+    setContent((prev) => ({ ...prev, title: e.target.value }));
   };
 
   const handleImageSelect = (file) => {
-    setImagePreview(file);
+    if (file) {
+      setContent((prev) => ({ ...prev, images: [...prev.images, file] }));
+    }
+  };
+
+  const removeImage = (index) => {
+    setContent((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index),
+    }));
   };
 
   useEffect(() => {
     const saved = localStorage.getItem(DRAFT_KEY);
     if (saved) {
-      const { title, blocks } = JSON.parse(saved);
-      setTitle(title || "");
-      setBlocks(blocks || [{ type: "text", content: "" }]);
+      const parsed = JSON.parse(saved);
+      setContent({
+        title: parsed.title || null,
+        text: parsed.text || "",
+        images: []
+      });
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(DRAFT_KEY, JSON.stringify({ title, blocks }));
-  }, [title, blocks]);
+    localStorage.setItem(
+      DRAFT_KEY,
+      JSON.stringify({ title: content.title, text: content.text })
+    );
+  }, [content.title, content.text]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setIsPublishing(true);
 
-    const hasContent = blocks.some(
-      (b) => b.type === "text" && b.content.trim()
-    );
-
-    if (!title.trim()) {
-      setError("Введите название истории.");
-      return;
-    }
-
-    if (!hasContent) {
-      setError("История не может быть пустой.");
+    if (!content.text.trim() && content.images.length === 0) {
+      setError("Пост не может быть пустым.");
+      setIsPublishing(false);
       return;
     }
 
     try {
-      let filename = null;
-      if (imagePreview) {
-        const form_data = new FormData();
-        form_data.append("file", imagePreview);
-        const response = await instanse.post("/api/upload", form_data);
-        filename = response.data.filename;
-
-        if (!filename) {
-          setError("Файл не загрузился. Попробуйте снова.");
-          return;
+      let uploadedImages = [];
+      if (content.images.length > 0) {
+        for (const image of content.images) {
+          if (!(image instanceof File)) {
+            throw new Error("Некорректный формат изображения");
+          }
+          const formData = new FormData();
+          formData.append("file", image);
+          const response = await instanse.post("/api/upload", formData);
+          uploadedImages.push(response.data.filename);
         }
-        insertImageAfter(blocks.length - 1, filename);
       }
 
+      const previewImage = uploadedImages[0] || null;
+
       await addDoc(collection(db, "stories"), {
-        title,
-        blocks,
+        title: content.title || null,
+        text: content.text,
+        images: uploadedImages,
+        previewImage,
         authorId: user.uid,
         authorName: user.name || "Аноним",
         createdAt: serverTimestamp(),
-        filename,
       });
 
-      setTitle("");
-      setBlocks([{ type: "text", content: "" }]);
-      setImagePreview(null);
+      setContent({ title: null, text: "", images: [] });
       localStorage.removeItem(DRAFT_KEY);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       console.error("Ошибка при публикации:", err);
       setError("Ошибка при публикации. Попробуйте снова.");
+    } finally {
+      setIsPublishing(false);
     }
   };
 
   return (
-    <div className="relative min-h-screen pt-24">
-      <form onSubmit={handleSubmit} className="max-w-4xl mx-auto p-6 space-y-6">
-        <div className="flex items-center gap-10">
-          <input
-            type="text"
-            placeholder="Название"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            style={{
-              width: "100%",
-              fontSize: "2rem",
-              fontWeight: "800",
-              outline: "none",
-              marginBottom: "10px",
-            }}
-          />
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              className="!text-white px-4 py-2 rounded-2xl bg-gray-500 hover:bg-green-500 transition"
+    <div className="relative min-h-screen pt-24 bg-gray-50">
+      <form
+        onSubmit={handleSubmit}
+        className="max-w-3xl mx-auto p-8 space-y-8 bg-white rounded-2xl shadow-lg"
+      >
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setShowTools(!showTools)}
+            className="absolute right-0 top-0 p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6"
             >
-              Опубликовать
-            </button>
-            {error && <p className="text-red-500 font-medium mt-2">{error}</p>}
-          </div>
-        </div>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4.5v15m7.5-7.5h-15"
+              />
+            </svg>
+          </button>
 
-        <div className="space-y-6">
-          {blocks.map((block, i) => (
-            <div key={i} className="relative group">
-              {block.type === "text" && (
-                <div
-                  contentEditable
-                  suppressContentEditableWarning
-                  onBlur={(e) => handleTextChange(i, e.target.innerText)}
-                  className="min-h-[80px] mt-6 p-3 border-l border-gray-300 outline-none text-xl font-mono"
-                >
-                  {block.content}
-                </div>
-              )}
-              {imagePreview && (
-                <div className="mt-4 p-4 bg-gray-50 rounded-2xl flex flex-col">
-                  <img
-                    src={URL.createObjectURL(imagePreview)}
-                    alt="Preview"
-                    className="w-full max-h-70 object-contain"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setImagePreview(null)}
-                    className="!text-gray-500 hover:!text-black transition-all"
-                  >
-                    Удалить изображение
-                  </button>
-                </div>
-              )}
-              {block.type === "image" && (
-                <img
-                  src={block.src}
-                  alt="user-upload"
-                  className="w-full max-h-96 object-contain"
-                />
-              )}
-              <div className="">
+          <AnimatePresence>
+            {showTools && (
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                className=""
+              >
                 <TextEditorTools
                   showTools={showTools}
                   setShowTools={setShowTools}
                   insertImage={handleImageSelect}
+                  toggleTitle={() =>
+                    setContent((prev) => ({
+                      ...prev,
+                      title: prev.title === null ? "" : null,
+                    }))
+                  }
+                  hasTitle={content.title !== null}
                 />
-              </div>
-            </div>
-          ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
+
+        <div className="mt-12">
+          {content.title !== null && (
+            <input
+              type="text"
+              placeholder="Название"
+              value={content.title}
+              onChange={handleTitleChange}
+              className="w-full !text-2xl font-bold outline-none mb-6 placeholder-gray-400"
+            />
+          )}
+          <div
+            ref={editorRef}
+            contentEditable
+            suppressContentEditableWarning
+            dir="ltr"
+            onInput={handleTextChange}
+            className="min-h-[300px] p-2 border-t border-gray-200  outline-none text-xl leading-relaxed focus:border-blue-500 transition"
+          >
+            {content.text === "" ? "" : null}
+          </div>
+
+          {content.images.length > 0 && (
+            <div className="mt-6 space-y-4">
+              {content.images.map((image, i) => (
+                <div
+                  key={i}
+                  className="p-4 bg-gray-100 rounded-xl flex flex-col items-center"
+                >
+                  {image instanceof File ? (
+                    <img
+                      src={URL.createObjectURL(image)}
+                      alt={`Preview ${i + 1}`}
+                      className="w-full max-h-96 object-contain rounded-lg"
+                    />
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={() => removeImage(i)}
+                    className="mt-2 text-sm text-red-500 hover:text-red-700 transition"
+                  >
+                    Удалить
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {error && (
+          <p className="text-black font-bold text-center">{error}</p>
+        )}
+
+        <button
+          type="submit"
+          disabled={isPublishing}
+          className="w-full py-3 px-3 !text-white font-semibold rounded-xl bg-green-500 hover:bg-green-600 transition flex items-center justify-center"
+        >
+          {isPublishing ? (
+            <svg
+              className="animate-spin h-5 w-5 mr-3 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+          ) : null}
+          {isPublishing ? "Публикация..." : "Опубликовать"}
+        </button>
       </form>
 
       <AnimatePresence>
@@ -189,7 +251,7 @@ export default function CreateStory() {
             exit={{ y: 100, opacity: 0 }}
             className="fixed bottom-5 left-1/2 -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50"
           >
-            История опубликована!
+            Пост опубликован!
           </motion.div>
         )}
       </AnimatePresence>

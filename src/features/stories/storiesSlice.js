@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { db } from "../../firebase/firebaseConfig";
-import { collection, getDocs, query, orderBy, doc, setDoc, deleteDoc, getDoc } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, doc, setDoc, deleteDoc, getDoc, updateDoc } from "firebase/firestore";
 
 export const fetchStories = createAsyncThunk(
   "stories/fetchStories",
@@ -40,6 +40,31 @@ export const toggleLike = createAsyncThunk(
   }
 );
 
+export const deleteStory = createAsyncThunk(
+  "stories/deleteStory",
+  async (storyId, { rejectWithValue }) => {
+    try {
+      await deleteDoc(doc(db, "stories", storyId));
+      return storyId;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const editStory = createAsyncThunk(
+  "stories/editStory",
+  async ({ storyId, title, text, previewImage }, { rejectWithValue }) => {
+    try {
+      const storyRef = doc(db, "stories", storyId);
+      await updateDoc(storyRef, { title, text, previewImage });
+      return { id: storyId, title, text, previewImage };
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const storiesSlice = createSlice({
   name: "stories",
   initialState: {
@@ -66,16 +91,43 @@ const storiesSlice = createSlice({
       })
       .addCase(toggleLike.fulfilled, (state, action) => {
         state.status = "succeeded";
-        // Обновление локального состояния (опционально)
         const { storyId, liked } = action.payload;
         const story = state.items.find((item) => item.id === storyId);
         if (story) {
-          story.likedByUser = liked; // Добавляем поле для отслеживания лайка пользователя
+          story.likedByUser = liked;
         }
       })
       .addCase(toggleLike.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
+      })
+      .addCase(deleteStory.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(deleteStory.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.items = state.items.filter((item) => item.id !== action.payload);
+      })
+      .addCase(deleteStory.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(editStory.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(editStory.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        const { id, title, text, previewImage } = action.payload;
+        const story = state.items.find((item) => item.id === id);
+        if (story) {
+          story.title = title;
+          story.text = text;
+          story.previewImage = previewImage;
+        }
+      })
+      .addCase(editStory.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
       });
   },
 });

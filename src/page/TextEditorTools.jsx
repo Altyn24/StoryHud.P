@@ -1,8 +1,16 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
-export default function TextEditorTools({ showTools, setShowTools, insertImage }) {
+export default function TextEditorTools({
+  showTools,
+  setShowTools,
+  insertImage,
+  toggleTitle,
+  hasTitle,
+}) {
   const fileInputRef = useRef();
+  const [showLinkInput, setShowLinkInput] = useState(false);
+  const [link, setLink] = useState("");
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -12,8 +20,21 @@ export default function TextEditorTools({ showTools, setShowTools, insertImage }
     }
   };
 
+  const applyFormat = (command, value = null) => {
+    document.execCommand(command, false, value);
+  };
+
+  const handleInsertLink = () => {
+    if (link.trim()) {
+      applyFormat("createLink", link.trim());
+      setLink("");
+      setShowLinkInput(false);
+    }
+  };
+
   return (
-    <div className="absolute -left-12 top-2 z-10">
+    <div className="absolute left-2 top-2 z-10">
+      {/* Кнопка "+"
       <button
         type="button"
         onClick={() => setShowTools(!showTools)}
@@ -27,17 +48,33 @@ export default function TextEditorTools({ showTools, setShowTools, insertImage }
           stroke="currentColor"
           className="size-6"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 4.5v15m7.5-7.5h-15"
+          />
         </svg>
-      </button>
+      </button> */}
+
+      {/* Панель инструментов */}
       <AnimatePresence>
         {showTools && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="mt-2 space-y-2 bg-white border rounded shadow-lg p-2 flex flex-col gap-1"
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -10 }}
+            className="absolute left-0 ml-12 bg-white border rounded-xl shadow-md p-4 flex gap-3 z-10"
           >
+            {/* Переключатель заголовка */}
+            <button
+              type="button"
+              onClick={toggleTitle}
+              className="text-gray-600 hover:text-black"
+            >
+              {hasTitle ? "Убрать название" : "Добавить название"}
+            </button>
+
+            {/* Загрузка изображения */}
             <label htmlFor="imageStory">
               <input
                 type="file"
@@ -47,23 +84,84 @@ export default function TextEditorTools({ showTools, setShowTools, insertImage }
                 style={{ display: "none" }}
                 onChange={handleImageUpload}
               />
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="size-6 cursor-pointer"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
-                />
-              </svg>
+              <span className="cursor-pointer text-gray-600 hover:text-black">
+                🖼️
+              </span>
             </label>
-            <button type="button" className="p-1 text-gray-500">...</button>
-            <button type="button" className="p-1 text-gray-500"></button>
+
+            {/* Жирный */}
+            <button
+              type="button"
+              onClick={() => applyFormat("bold")}
+              className="text-gray-600 hover:text-black font-bold"
+            >
+              B
+            </button>
+
+            {/* Курсив */}
+            <button
+              type="button"
+              onClick={() => applyFormat("italic")}
+              className="text-gray-600 hover:text-black italic"
+            >
+              I
+            </button>
+
+            {/* Заголовок */}
+            <button
+              type="button"
+              onClick={() => applyFormat("formatBlock", "h2")}
+              className="text-gray-600 hover:text-black font-semibold"
+            >
+              H2
+            </button>
+
+            {/* Разделитель */}
+            <button
+              type="button"
+              onClick={() => applyFormat("insertHorizontalRule")}
+              className="text-gray-600 hover:text-black"
+            >
+              ―
+            </button>
+
+            {/* Ссылка */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setShowLinkInput(!showLinkInput)}
+                className="text-gray-600 hover:text-black underline"
+              >
+                🔗
+              </button>
+
+              <AnimatePresence>
+                {showLinkInput && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: -5 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -5 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute left-8 top-0 bg-white border rounded-lg shadow-md p-2 flex items-center gap-2"
+                  >
+                    <input
+                      type="text"
+                      value={link}
+                      onChange={(e) => setLink(e.target.value)}
+                      placeholder="Вставьте ссылку..."
+                      className="border px-2 py-1 rounded text-sm outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleInsertLink}
+                      className="px-2 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+                    >
+                      OK
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

@@ -3,7 +3,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../../firebase/firebaseConfig";
 import { setUser } from "./authSlice";
 import { doc, getDoc } from "firebase/firestore";
-import { fetchOrCreateChannel } from "./channelSlice"; // ← добавляем
+import { fetchOrCreateChannel } from "./channelSlice";
 
 export const loadUser = createAsyncThunk(
   "auth/loadUser",
@@ -24,8 +24,6 @@ export const loadUser = createAsyncThunk(
 
           dispatch(setUser(updatedUser));
           localStorage.setItem("user", JSON.stringify(updatedUser));
-
-          // 📌 Загружаем или создаём канал
           dispatch(fetchOrCreateChannel(updatedUser));
 
           resolve(updatedUser);

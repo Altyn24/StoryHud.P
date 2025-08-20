@@ -2,9 +2,23 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { db } from "../../firebase/firebaseConfig";
 import { doc, getDoc, setDoc, collection, getDocs, query, where, orderBy, deleteDoc } from "firebase/firestore";
 
+const convertTimestamp = (ts) => {
+  if (!ts) return null;
+  if (ts.toDate) return ts.toDate().toISOString();
+  if (typeof ts === "string") return ts;
+  if (ts.seconds) return new Date(ts.seconds * 1000).toISOString();
+  return null;
+};
+
+// --- Async Thunks с кешированием ---
 export const fetchOrCreateChannel = createAsyncThunk(
   "channel/fetchOrCreateChannel",
   async (userId, { getState }) => {
+    const state = getState();
+    if (state.channel.channelCache[userId]) {
+      return state.channel.channelCache[userId]; // Возвращаем из кеша
+    }
+
     const docRef = doc(db, "channels", userId);
     const docSnap = await getDoc(docRef);
 
@@ -12,10 +26,10 @@ export const fetchOrCreateChannel = createAsyncThunk(
       const data = docSnap.data();
       return {
         ...data,
-        createdAt: data.createdAt?.toDate().toISOString() || null,
+        createdAt: convertTimestamp(data.createdAt),
       };
     } else {
-      const user = getState().auth.user;
+      const user = state.auth.user;
       const newChannel = {
         title: user?.name ? `${user.name}'s Channel` : "Новый канал",
         description: "",
@@ -30,22 +44,31 @@ export const fetchOrCreateChannel = createAsyncThunk(
 
 export const fetchUserPosts = createAsyncThunk(
   "channel/fetchUserPosts",
-  async (userId) => {
+  async (userId, { getState }) => {
+    const state = getState();
+    if (state.channel.postsCache[userId]) {
+      return state.channel.postsCache[userId]; // Возвращаем из кеша
+    }
+
     const postsQuery = query(
       collection(db, "stories"),
       where("authorId", "==", userId),
       orderBy("createdAt", "desc")
     );
     const querySnapshot = await getDocs(postsQuery);
-    const posts = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-      createdAt: doc.data().createdAt?.toDate().toISOString() || null,
-    }));
+    const posts = querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: convertTimestamp(data.createdAt),
+      };
+    });
     return posts;
   }
 );
 
+// --- follow/unfollow и fetchFollowing/fetchFollowers без изменений ---
 export const followUser = createAsyncThunk(
   "channel/followUser",
   async ({ followerId, followedId }, { rejectWithValue }) => {
@@ -94,25 +117,7 @@ export const fetchFollowers = createAsyncThunk(
   }
 );
 
-export const fetchFollowingDetails = createAsyncThunk(
-  "channel/fetchFollowingDetails",
-  async (userId) => {
-    const followingRef = collection(db, "users", userId, "following");
-    const querySnapshot = await getDocs(followingRef);
-    const followedIds = querySnapshot.docs.map((doc) => doc.data().followedId);
-    
-    if (followedIds.length === 0) return [];
-    
-    const userPromises = followedIds.map((id) =>
-      getDoc(doc(db, "users", id)).then((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }))
-    );
-    return Promise.all(userPromises);
-  }
-);
-
+// --- Slice ---
 const channelSlice = createSlice({
   name: "channel",
   initialState: {
@@ -123,80 +128,38 @@ const channelSlice = createSlice({
     followingDetails: [],
     loading: false,
     error: null,
+    channelCache: {},  // <--- кеш каналов
+    postsCache: {},    // <--- кеш постов
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchOrCreateChannel.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
       .addCase(fetchOrCreateChannel.fulfilled, (state, action) => {
-        state.loading = false;
         state.channel = action.payload;
-      })
-      .addCase(fetchOrCreateChannel.rejected, (state, action) => {
+        state.channelCache[action.payload.ownerId] = action.payload;
         state.loading = false;
-        state.error = action.error.message;
-      })
-      .addCase(fetchUserPosts.pending, (state) => {
-        state.loading = true;
-        state.error = null;
       })
       .addCase(fetchUserPosts.fulfilled, (state, action) => {
-        state.loading = false;
         state.posts = action.payload;
-      })
-      .addCase(fetchUserPosts.rejected, (state, action) => {
+        if (action.meta.arg) {
+          state.postsCache[action.meta.arg] = action.payload;
+        }
         state.loading = false;
-        state.error = action.error.message;
-      })
-      .addCase(followUser.pending, (state) => {
-        state.loading = true;
-        state.error = null;
       })
       .addCase(followUser.fulfilled, (state, action) => {
-        state.loading = false;
         state.following = [...state.following, action.payload.followedId];
       })
-      .addCase(followUser.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
-      })
-      .addCase(unfollowUser.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
       .addCase(unfollowUser.fulfilled, (state, action) => {
-        state.loading = false;
-        state.following = state.following.filter(
-          (id) => id !== action.payload.followedId
-        );
+        state.following = state.following.filter((id) => id !== action.payload.followedId);
         state.followingDetails = state.followingDetails.filter(
           (user) => user.id !== action.payload.followedId
         );
-      })
-      .addCase(unfollowUser.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
       })
       .addCase(fetchFollowing.fulfilled, (state, action) => {
         state.following = action.payload;
       })
       .addCase(fetchFollowers.fulfilled, (state, action) => {
         state.followers = action.payload;
-      })
-      .addCase(fetchFollowingDetails.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchFollowingDetails.fulfilled, (state, action) => {
-        state.loading = false;
-        state.followingDetails = action.payload;
-      })
-      .addCase(fetchFollowingDetails.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
       });
   },
 });
