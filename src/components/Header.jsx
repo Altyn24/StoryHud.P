@@ -5,7 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import NavBar from "../page/NavBar";
 import avatarDef from "../assets/avatar-people-user-svgrepo-com.svg";
 import { setSearchQuery } from "../features/searchSlice";
-import SearchResults from "../page/Search";
+import SearchResult from "../page/Search";
+
 
 function Header({ onMenuToggle }) {
   const isAuth = useSelector((state) => state.auth.isAuth);
@@ -39,7 +40,7 @@ function Header({ onMenuToggle }) {
 
   return (
     <>
-      <div className="p-3 w-full shadow-md mb-3 bg-[#acc3db] fixed top-0 left-0 right-0 z-50 sm:p-4">
+      <div className="p-3 w-full shadow-md mb-3 bg-[#acc3db] fixed top-0 left-0 right-0 z-50 sm:">
         <header className="flex justify-between items-center max-w-screen-xl mx-auto">
           <div className="flex items-center gap-2">
             <button
@@ -87,11 +88,11 @@ function Header({ onMenuToggle }) {
               Write<span className="!text-blue-500">Side</span>
             </Link>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center">
             <div className="relative flex items-center">
               <button
                 onClick={toggleSearch}
-                className="p-2 sm:hidden"
+                className="sm:hidden p-2"
                 aria-label="Toggle search"
               >
                 <svg
@@ -110,18 +111,18 @@ function Header({ onMenuToggle }) {
                 </svg>
               </button>
               <div
-                className={`${
+                className={`w-40 sm:w-64 ${
                   searchOpen ? "block" : "hidden sm:block"
-                } w-32 sm:w-64`}
+                }`}
               >
                 <input
                   type="text"
-                  className="rounded-xl bg-[#d5e5f4] px-2 py-1 sm:px-4 sm:py-2 outline-none w-full text-sm sm:text-base"
+                  className="rounded-xl bg-[#d5e5f4] px-3 py-1 sm:px-4 sm:py-2 outline-none w-full text-sm sm:text-base"
                   placeholder="Поиск"
                   value={searchQuery}
                   onChange={(e) => dispatch(setSearchQuery(e.target.value))}
                 />
-                <SearchResults />
+                <SearchResult />
               </div>
             </div>
             {isAuth && user ? (
@@ -136,7 +137,7 @@ function Header({ onMenuToggle }) {
             ) : (
               <Link
                 to="/signup"
-                className="!text-white bg-[#2B2B2A] rounded-3xl px-3 py-1 hover:text-gray-200 text-sm sm:text-base"
+                className="!text-white bg-[#2B2B2A] rounded-3xl px-3 py-1 hover: text-sm sm:text-base"
               >
                 Регистрация
               </Link>
@@ -145,7 +146,7 @@ function Header({ onMenuToggle }) {
         </header>
       </div>
       <div
-        className={`fixed inset-0 z-40 transition-opacity duration-300 bg-gray-800 bg-opacity-50 ${
+        className={`fixed inset-0 z-40 transition-opacity duration-300   bg-opacity-50 ${
           sidebarOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"

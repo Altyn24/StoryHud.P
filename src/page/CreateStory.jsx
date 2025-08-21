@@ -15,6 +15,7 @@ export default function CreateStory() {
   const [showTools, setShowTools] = useState(false);
   const [error, setError] = useState("");
   const [isPublishing, setIsPublishing] = useState(false);
+  const [tags, setTags] = useState("");
   const editorRef = useRef(null);
 
   const handleTextChange = (e) => {
@@ -39,6 +40,11 @@ export default function CreateStory() {
     }));
   };
 
+  function handleTagsChage(e) {
+    const value = e.target.value;
+    setTags(value.split(",").map((tag) => tag.trim()));
+  }
+
   useEffect(() => {
     const saved = localStorage.getItem(DRAFT_KEY);
     if (saved) {
@@ -46,7 +52,7 @@ export default function CreateStory() {
       setContent({
         title: parsed.title || null,
         text: parsed.text || "",
-        images: []
+        images: [],
       });
     }
   }, []);
@@ -62,6 +68,11 @@ export default function CreateStory() {
     e.preventDefault();
     setError("");
     setIsPublishing(true);
+
+    const tagsArray = tags
+      .split(",")
+      .map((tag) => tag.trim().toLowerCase())
+      .filter((tag) => tag);
 
     if (!content.text.trim() && content.images.length === 0) {
       setError("Пост не может быть пустым.");
@@ -82,7 +93,6 @@ export default function CreateStory() {
           uploadedImages.push(response.data.filename);
         }
       }
-
       const previewImage = uploadedImages[0] || null;
 
       await addDoc(collection(db, "stories"), {
@@ -90,12 +100,14 @@ export default function CreateStory() {
         text: content.text,
         images: uploadedImages,
         previewImage,
+        tegs: tagsArray,
         authorId: user.uid,
         authorName: user.name || "Аноним",
         createdAt: serverTimestamp(),
       });
 
       setContent({ title: null, text: "", images: [] });
+      setTags("");
       localStorage.removeItem(DRAFT_KEY);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
@@ -170,6 +182,7 @@ export default function CreateStory() {
               className="w-full !text-2xl font-bold outline-none mb-6 placeholder-gray-400"
             />
           )}
+
           <div
             ref={editorRef}
             contentEditable
@@ -180,7 +193,13 @@ export default function CreateStory() {
           >
             {content.text === "" ? "" : null}
           </div>
-
+          <input
+            type="text"
+            placeholder="Теги"
+            value={tags}
+            onChange={(e) => setTags(e.target.value)}
+            className="p-2 outline-none w-full border-b border-gray-200"
+          />
           {content.images.length > 0 && (
             <div className="mt-6 space-y-4">
               {content.images.map((image, i) => (
@@ -208,9 +227,7 @@ export default function CreateStory() {
           )}
         </div>
 
-        {error && (
-          <p className="text-black font-bold text-center">{error}</p>
-        )}
+        {error && <p className="text-black font-bold text-center">{error}</p>}
 
         <button
           type="submit"

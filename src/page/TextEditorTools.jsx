@@ -71,7 +71,7 @@ export default function TextEditorTools({
               onClick={toggleTitle}
               className="text-gray-600 hover:text-black"
             >
-              {hasTitle ? "Убрать название" : "Добавить название"}
+              {hasTitle ? "Убрать название" : "Название"}
             </button>
 
             {/* Загрузка изображения */}
@@ -85,7 +85,20 @@ export default function TextEditorTools({
                 onChange={handleImageUpload}
               />
               <span className="cursor-pointer text-gray-600 hover:text-black">
-                🖼️
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="size-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
+                  />
+                </svg>
               </span>
             </label>
 
@@ -95,7 +108,19 @@ export default function TextEditorTools({
               onClick={() => applyFormat("bold")}
               className="text-gray-600 hover:text-black font-bold"
             >
-              B
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinejoin="round"
+                  d="M6.75 3.744h-.753v8.25h7.125a4.125 4.125 0 0 0 0-8.25H6.75Zm0 0v.38m0 16.122h6.747a4.5 4.5 0 0 0 0-9.001h-7.5v9h.753Zm0 0v-.37m0-15.751h6a3.75 3.75 0 1 1 0 7.5h-6m0-7.5v7.5m0 0v8.25m0-8.25h6.375a4.125 4.125 0 0 1 0 8.25H6.75m.747-15.38h4.875a3.375 3.375 0 0 1 0 6.75H7.497v-6.75Zm0 7.5h5.25a3.75 3.75 0 0 1 0 7.5h-5.25v-7.5Z"
+                />
+              </svg>
             </button>
 
             {/* Курсив */}
@@ -104,7 +129,20 @@ export default function TextEditorTools({
               onClick={() => applyFormat("italic")}
               className="text-gray-600 hover:text-black italic"
             >
-              I
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5.248 20.246H9.05m0 0h3.696m-3.696 0 5.893-16.502m0 0h-3.697m3.697 0h3.803"
+                />
+              </svg>
             </button>
 
             {/* Заголовок */}
@@ -113,27 +151,30 @@ export default function TextEditorTools({
               onClick={() => applyFormat("formatBlock", "h2")}
               className="text-gray-600 hover:text-black font-semibold"
             >
-              H2
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+  <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 19.5H16.5v-1.609a2.25 2.25 0 0 1 1.244-2.012l2.89-1.445c.651-.326 1.116-.955 1.116-1.683 0-.498-.04-.987-.118-1.463-.135-.825-.835-1.422-1.668-1.489a15.202 15.202 0 0 0-3.464.12M2.243 4.492v7.5m0 0v7.502m0-7.501h10.5m0-7.5v7.5m0 0v7.501" />
+</svg>
+
             </button>
 
             {/* Разделитель */}
-            <button
+            {/* <button
               type="button"
               onClick={() => applyFormat("insertHorizontalRule")}
               className="text-gray-600 hover:text-black"
             >
               ―
-            </button>
+            </button> */}
 
             {/* Ссылка */}
             <div className="relative">
-              <button
+              {/* <button
                 type="button"
                 onClick={() => setShowLinkInput(!showLinkInput)}
                 className="text-gray-600 hover:text-black underline"
               >
                 🔗
-              </button>
+              </button> */}
 
               <AnimatePresence>
                 {showLinkInput && (

@@ -1,13 +1,15 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { fetchStories } from "../features/stories/storiesSlice";
 import StoryCard from "./StoryCards";
 import { Flex, Spin, message, Skeleton } from "antd";
 import { motion, AnimatePresence } from "framer-motion";
+import TagBar from "./TegBar";
 
 function Home() {
   const dispatch = useDispatch();
   const { items, status, error } = useSelector((state) => state.stories);
+
 
   useEffect(() => {
     if (status === "idle") {
@@ -93,6 +95,9 @@ function Home() {
               ))}
           </motion.div>
         </AnimatePresence>
+         {/* <aside className="w-72 p-4 border-r dark:border-gray-700 text-white">
+        <TagBar selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
+      </aside> */}
       </main>
     </div>
   );

@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function SearchResults() {
   const searchQuery = useSelector((state) => state.search);
@@ -14,21 +15,31 @@ export default function SearchResults() {
   });
 
   return (
-    <div className="absolute top-full p-1 w-full rounded-sm bg-white shadow-lg border border-gray-200 z-40 max-h-100 overflow-y-auto">
-      <div className="p-3 text-gray-400">Результат поиска</div>
-      {filtered.length > 0 ? (
-        filtered.map((story) => (
-          <Link
-            key={story.id}
-            to={`/post/${story.id}`}
-            className="px-4 py-2 hover:bg-gray-100 flex border-gray-400 border-b m-3"
-          >
-            {story.title ? story.title : story.text?.slice(0, 50) + (story.text.length > 50 ? "..." : "")}
-          </Link>
-        ))
-      ) : (
-        <div className="p-4 text-gray-500">Ничего не найдено</div>
-      )}
-    </div>
+    <AnimatePresence>
+      <motion.div
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: -20, opacity: 0 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+        className="absolute top-full left-0 w-full rounded-md bg-white shadow-xl border border-gray-300 z-40 max-h-80 overflow-y-auto"
+      >
+        <div className="px-4 py-2 text-gray-500 bg-gray-50">Результат поиска</div>
+        {filtered.length > 0 ? (
+          filtered.map((story) => (
+            <Link
+              key={story.id}
+              to={`/post/${story.id}`}
+              className="flex items-center px-4 py-2 hover:bg-gray-100 transition-colors duration-200 border-b border-gray-200 last:border-b-0"
+            >
+              <span className="text-sm sm:text-base text-gray-800">
+                {story.title ? story.title : story.text?.slice(0, 50) + (story.text.length > 50 ? "..." : "")}
+              </span>
+            </Link>
+          ))
+        ) : (
+          <div className="px-4 py-3 text-gray-600">Ничего не найдено</div>
+        )}
+      </motion.div>
+    </AnimatePresence>
   );
 }
