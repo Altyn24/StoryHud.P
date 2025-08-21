@@ -6,12 +6,18 @@ import { getImage } from "../components/getImage";
 import { Skeleton, Avatar } from "antd";
 import CommentsSection from "./CommentsSelection";
 import avatarDef from "../assets/avatar-people-user-svgrepo-com.svg";
+import { followUser, unfollowUser } from "../features/auth/channelSlice";
+import { message } from "antd";
 
 const Post = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const { item: story, status, error } = useSelector((state) => state.post);
   const user = useSelector((state) => state.auth.user);
+const isFollowing = useSelector((state) =>
+  story?.authorId ? state.channel.following.includes(story.authorId) : false
+);
+
 
   useEffect(() => {
     dispatch(fetchPostById(id));
@@ -34,6 +40,20 @@ const Post = () => {
   if (status === "failed") return <p>Ошибка: {error}</p>;
   if (!story) return <p>История не найдена</p>;
 
+  const handleFollow = () => {
+    if (!user) {
+      message.warning("Войдите в аккаунт, чтобы подписаться");
+      return;
+    }
+    dispatch(followUser({ followerId: user.uid, followedId: story.authorId }));
+  };
+
+  const handleUnfollow = () => {
+    dispatch(
+      unfollowUser({ followerId: user.uid, followedId: story.authorId })
+    );
+  };
+
   return (
     <div className="max-w-3xl mx-auto p-4 pt-24">
       {story.title && (
@@ -55,10 +75,12 @@ const Post = () => {
           <span>{story.authorName}</span>
         </Link>
         <button
-          className="rounded-3xl border-1 border-black px-3 py-2 hover:bg-black hover:!text-white transition-colors"
-          type="submit"
+          onClick={isFollowing ? handleUnfollow : handleFollow}
+          className={`rounded-3xl border-1 border-black px-3 py-2 hover:bg-black hover:!text-white transition-colors ${
+            isFollowing ? "bg-black !text-white" : "bg-white"
+          }`}
         >
-          Подписаться
+          {isFollowing ? "Отписаться" : "Подписаться"}
         </button>
       </div>
 
