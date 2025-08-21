@@ -3,8 +3,6 @@ import { motion } from "framer-motion";
 export const TAGS = ["Спорт", "Игры", "Наука", "Технологии", "Фильмы"];
 
 export default function TagBar({ selectedTags, setSelectedTags }) {
-  
-
   const toggleTag = (tag) => {
     if (selectedTags.includes(tag)) {
       setSelectedTags(selectedTags.filter((t) => t !== tag));
@@ -17,7 +15,7 @@ export default function TagBar({ selectedTags, setSelectedTags }) {
     <div>
       <div className="flex flex-wrap gap-2 mb-4 justify-end">
         {TAGS.map((tag) => (
-          <motion.button
+          <motion.div
             key={tag}
             onClick={() => toggleTag(tag)}
             initial={{ opacity: 0, scale: 0.8 }}
@@ -30,7 +28,7 @@ export default function TagBar({ selectedTags, setSelectedTags }) {
             }`}
           >
             {tag}
-          </motion.button>
+          </motion.div>
         ))}
       </div>
     </div>
