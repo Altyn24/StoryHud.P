@@ -7,7 +7,6 @@ import avatarDef from "../assets/avatar-people-user-svgrepo-com.svg";
 import { setSearchQuery } from "../features/searchSlice";
 import SearchResult from "../page/Search";
 
-
 function Header({ onMenuToggle }) {
   const isAuth = useSelector((state) => state.auth.isAuth);
   const user = useSelector((state) => state.auth.user);
@@ -90,6 +89,20 @@ function Header({ onMenuToggle }) {
           </div>
           <div className="flex items-center">
             <div className="relative flex items-center">
+              <div
+                className={`w-40 sm:w-64 ${
+                  searchOpen ? "block" : "hidden sm:block"
+                }`}
+              >
+                <input
+                  type="text"
+                  className="rounded-xl bg-[#d5e5f4] px-3 py-1 sm:px-4 sm:py-2 outline-none w-full text-sm sm:text-base"
+                  placeholder="Поиск"
+                  value={searchQuery}
+                  onChange={(e) => dispatch(setSearchQuery(e.target.value))}
+                />
+                <SearchResult />
+              </div>{" "}
               <button
                 onClick={toggleSearch}
                 className="sm:hidden p-2"
@@ -110,20 +123,6 @@ function Header({ onMenuToggle }) {
                   />
                 </svg>
               </button>
-              <div
-                className={`w-40 sm:w-64 ${
-                  searchOpen ? "block" : "hidden sm:block"
-                }`}
-              >
-                <input
-                  type="text"
-                  className="rounded-xl bg-[#d5e5f4] px-3 py-1 sm:px-4 sm:py-2 outline-none w-full text-sm sm:text-base"
-                  placeholder="Поиск"
-                  value={searchQuery}
-                  onChange={(e) => dispatch(setSearchQuery(e.target.value))}
-                />
-                <SearchResult />
-              </div>
             </div>
             {isAuth && user ? (
               <div>

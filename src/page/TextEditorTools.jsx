@@ -63,7 +63,7 @@ export default function TextEditorTools({
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -10 }}
-            className="absolute left-0 ml-12 bg-white border rounded-xl shadow-md p-4 flex gap-3 z-10"
+            className="absolute left-20 ml-12 bg-white border rounded-xl shadow-md p-4 flex gap-3 z-10"
           >
             {/* Переключатель заголовка */}
             <button

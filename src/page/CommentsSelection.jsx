@@ -104,7 +104,7 @@ const CommentsSection = ({ storyId }) => {
             initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -50 }}
-            className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg pt-24 ${
+            className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg ${
               notification.isError ? "bg-red-500" : notification.onConfirm ? "bg-[#acc3db]" : "bg-green-500"
             } text-white flex items-center gap-2`}
           >
@@ -153,7 +153,7 @@ const CommentsSection = ({ storyId }) => {
           {replyTo && (
             <button
               type="button"
-              className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
+              className="bg-gray-300 text-black px-4 py-2 rounded-2xl hover:bg-gray-400 transition-colors"
               onClick={() => setReplyTo(null)}
             >
               Отмена
@@ -167,10 +167,11 @@ const CommentsSection = ({ storyId }) => {
           {comments.map((comment) => (
             <motion.div
               key={comment.id}
-              initial={{ opacity: 1 }}
-              exit={{ opacity: 0, height: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className="border-b pb-3"
+              className="pb-3"
             >
               <div className="flex gap-3 items-start">
                 <img
@@ -234,8 +235,9 @@ const CommentsSection = ({ storyId }) => {
                     {comment.replies.map((reply) => (
                       <motion.div
                         key={reply.id}
-                        initial={{ opacity: 1 }}
-                        exit={{ opacity: 0, height: 0 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
                         transition={{ duration: 0.3 }}
                         className="flex gap-3 items-start"
                       >

@@ -1,6 +1,16 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { db } from "../../firebase/firebaseConfig";
-import { doc, getDoc, setDoc, collection, getDocs, query, where, orderBy, deleteDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  getDocs,
+  query,
+  where,
+  orderBy,
+  deleteDoc,
+} from "firebase/firestore";
 
 const convertTimestamp = (ts) => {
   if (!ts) return null;
@@ -10,7 +20,33 @@ const convertTimestamp = (ts) => {
   return null;
 };
 
-// --- Async Thunks с кешированием ---
+export const fetchFollowingDetails = createAsyncThunk(
+  "channel/fetchFollowingDetails",
+  async (userId) => {
+    // 1. Получаем все ID на кого подписан пользователь
+    const followingRef = collection(db, "users", userId, "following");
+    const querySnapshot = await getDocs(followingRef);
+    const ids = querySnapshot.docs.map((doc) => doc.data().followedId);
+
+    if (ids.length === 0) return [];
+
+    // 2. Достаём сами каналы
+    const channelsRef = collection(db, "channels");
+    const q = query(channelsRef, where("__name__", "in", ids));
+    const channelsSnap = await getDocs(q);
+
+    return channelsSnap.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: convertTimestamp(data.createdAt), // <-- фикс сериализации
+      };
+    });
+  }
+);
+
+
 export const fetchOrCreateChannel = createAsyncThunk(
   "channel/fetchOrCreateChannel",
   async (userId, { getState }) => {
@@ -73,7 +109,13 @@ export const followUser = createAsyncThunk(
   "channel/followUser",
   async ({ followerId, followedId }, { rejectWithValue }) => {
     try {
-      const followingRef = doc(db, "users", followerId, "following", followedId);
+      const followingRef = doc(
+        db,
+        "users",
+        followerId,
+        "following",
+        followedId
+      );
       const followerRef = doc(db, "users", followedId, "followers", followerId);
       await setDoc(followingRef, { followedId, followedAt: new Date() });
       await setDoc(followerRef, { followerId, followedAt: new Date() });
@@ -88,7 +130,13 @@ export const unfollowUser = createAsyncThunk(
   "channel/unfollowUser",
   async ({ followerId, followedId }, { rejectWithValue }) => {
     try {
-      const followingRef = doc(db, "users", followerId, "following", followedId);
+      const followingRef = doc(
+        db,
+        "users",
+        followerId,
+        "following",
+        followedId
+      );
       const followerRef = doc(db, "users", followedId, "followers", followerId);
       await deleteDoc(followingRef);
       await deleteDoc(followerRef);
@@ -128,8 +176,8 @@ const channelSlice = createSlice({
     followingDetails: [],
     loading: false,
     error: null,
-    channelCache: {},  // <--- кеш каналов
-    postsCache: {},    // <--- кеш постов
+    channelCache: {}, // <--- кеш каналов
+    postsCache: {}, // <--- кеш постов
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -150,7 +198,9 @@ const channelSlice = createSlice({
         state.following = [...state.following, action.payload.followedId];
       })
       .addCase(unfollowUser.fulfilled, (state, action) => {
-        state.following = state.following.filter((id) => id !== action.payload.followedId);
+        state.following = state.following.filter(
+          (id) => id !== action.payload.followedId
+        );
         state.followingDetails = state.followingDetails.filter(
           (user) => user.id !== action.payload.followedId
         );
@@ -160,6 +210,9 @@ const channelSlice = createSlice({
       })
       .addCase(fetchFollowers.fulfilled, (state, action) => {
         state.followers = action.payload;
+      })
+      .addCase(fetchFollowingDetails.fulfilled, (state, action) => {
+        state.followingDetails = action.payload;
       });
   },
 });

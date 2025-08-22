@@ -86,11 +86,7 @@ const storiesSlice = createSlice({
         state.status = "failed";
         state.error = action.error.message;
       })
-      .addCase(toggleLike.pending, (state) => {
-        state.status = "loading";
-      })
       .addCase(toggleLike.fulfilled, (state, action) => {
-        state.status = "succeeded";
         const { storyId, liked } = action.payload;
         const story = state.items.find((item) => item.id === storyId);
         if (story) {
@@ -98,8 +94,7 @@ const storiesSlice = createSlice({
         }
       })
       .addCase(toggleLike.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
+        state.error = action.payload;
       })
       .addCase(deleteStory.pending, (state) => {
         state.status = "loading";
