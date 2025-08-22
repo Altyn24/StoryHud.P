@@ -50,9 +50,10 @@ const LikeButton = ({ storyId }) => {
     }
     setLoading(true);
     try {
-      await dispatch(toggleLike({ storyId, userId: user.uid })).unwrap();
-      await fetchLikes();
-      message.success(isLiked ? "Лайк удалён" : "Лайк поставлен");
+      const result = await dispatch(toggleLike({ storyId, userId: user.uid })).unwrap();
+      // Локально обновляем likeCount
+      setLikeCount((prev) => (result.liked ? prev + 1 : prev - 1));
+      message.success(result.liked ? "Лайк поставлен" : "Лайк удалён");
     } catch (error) {
       message.error("Ошибка при обновлении лайка");
       console.error("Ошибка лайка:", error);

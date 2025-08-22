@@ -5,21 +5,49 @@ import { db } from "../firebase/firebaseConfig";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { instanse } from "./instans/instans";
 import TextEditorTools from "./TextEditorTools";
+import TagBar, { TAGS } from "./TegBar";
+import { getImage } from "../components/getImage";
 
 const DRAFT_KEY = "storyhub_draft";
 
 export default function CreateStory() {
   const user = useSelector((state) => state.auth.user);
   const [content, setContent] = useState({ title: null, text: "", images: [] });
+  const [tags, setTags] = useState([]); // массив тегов
   const [success, setSuccess] = useState(false);
   const [showTools, setShowTools] = useState(false);
   const [error, setError] = useState("");
   const [isPublishing, setIsPublishing] = useState(false);
-  const [tags, setTags] = useState("");
+  const [showTags, setShowTags] = useState(false);
   const editorRef = useRef(null);
 
+  useEffect(() => {
+    const saved = localStorage.getItem(DRAFT_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      setContent({
+        title: parsed.title || null,
+        text: parsed.text || "",
+        images: parsed.images || [],
+      });
+      setTags(parsed.tags || []);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(
+      DRAFT_KEY,
+      JSON.stringify({
+        title: content.title,
+        text: content.text,
+        images: content.images,
+        tags,
+      })
+    );
+  }, [content, tags]);
+
   const handleTextChange = (e) => {
-    const newText = e.target.innerText;
+    const newText = e.target.innerHTML;
     setContent((prev) => ({ ...prev, text: newText }));
   };
 
@@ -40,39 +68,10 @@ export default function CreateStory() {
     }));
   };
 
-  function handleTagsChage(e) {
-    const value = e.target.value;
-    setTags(value.split(",").map((tag) => tag.trim()));
-  }
-
-  useEffect(() => {
-    const saved = localStorage.getItem(DRAFT_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      setContent({
-        title: parsed.title || null,
-        text: parsed.text || "",
-        images: [],
-      });
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem(
-      DRAFT_KEY,
-      JSON.stringify({ title: content.title, text: content.text })
-    );
-  }, [content.title, content.text]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setIsPublishing(true);
-
-    const tagsArray = tags
-      .split(",")
-      .map((tag) => tag.trim().toLowerCase())
-      .filter((tag) => tag);
 
     if (!content.text.trim() && content.images.length === 0) {
       setError("Пост не может быть пустым.");
@@ -82,17 +81,17 @@ export default function CreateStory() {
 
     try {
       let uploadedImages = [];
-      if (content.images.length > 0) {
-        for (const image of content.images) {
-          if (!(image instanceof File)) {
-            throw new Error("Некорректный формат изображения");
-          }
+      for (const image of content.images) {
+        if (image instanceof File) {
           const formData = new FormData();
           formData.append("file", image);
           const response = await instanse.post("/api/upload", formData);
           uploadedImages.push(response.data.filename);
+        } else {
+          uploadedImages.push(image);
         }
       }
+
       const previewImage = uploadedImages[0] || null;
 
       await addDoc(collection(db, "stories"), {
@@ -100,14 +99,14 @@ export default function CreateStory() {
         text: content.text,
         images: uploadedImages,
         previewImage,
-        tegs: tagsArray,
+        tags, // сохраняем массив тегов
         authorId: user.uid,
         authorName: user.name || "Аноним",
         createdAt: serverTimestamp(),
       });
 
       setContent({ title: null, text: "", images: [] });
-      setTags("");
+      setTags([]);
       localStorage.removeItem(DRAFT_KEY);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
@@ -120,16 +119,19 @@ export default function CreateStory() {
   };
 
   return (
-    <div className="relative min-h-screen pt-24 bg-gray-50">
+    <div className="min-h-screen pt-24 bg-gray-50">
       <form
         onSubmit={handleSubmit}
-        className="max-w-3xl mx-auto p-8 space-y-8 bg-white rounded-2xl shadow-lg"
+        className="max-w-3xl mx-auto p-6 bg-white border border-gray-200 rounded-lg"
       >
+        {/* Панель инструментов */}
         <div className="relative">
-          <button
+          <motion.button
             type="button"
             onClick={() => setShowTools(!showTools)}
-            className="absolute right-0 top-0 p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="absolute right-0 top-0 p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -145,15 +147,15 @@ export default function CreateStory() {
                 d="M12 4.5v15m7.5-7.5h-15"
               />
             </svg>
-          </button>
-
+          </motion.button>
           <AnimatePresence>
             {showTools && (
               <motion.div
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -10 }}
-                className=""
+                transition={{ duration: 0.3 }}
+                className="mt-2"
               >
                 <TextEditorTools
                   showTools={showTools}
@@ -172,14 +174,15 @@ export default function CreateStory() {
           </AnimatePresence>
         </div>
 
-        <div className="mt-12">
+        {/* Заголовок и текст */}
+        <div className="mt-6">
           {content.title !== null && (
             <input
               type="text"
               placeholder="Название"
               value={content.title}
               onChange={handleTitleChange}
-              className="w-full !text-2xl font-bold outline-none mb-6 placeholder-gray-400"
+              className="w-full text-2xl font-semibold text-gray-900 outline-none mb-4 placeholder-gray-400"
             />
           )}
 
@@ -187,77 +190,118 @@ export default function CreateStory() {
             ref={editorRef}
             contentEditable
             suppressContentEditableWarning
-            dir="ltr"
             onInput={handleTextChange}
-            className="min-h-[300px] p-2 border-t border-gray-200  outline-none text-xl leading-relaxed focus:border-blue-500 transition"
+            className="min-h-[200px] p-4 border-t border-gray-200 outline-none text-lg leading-relaxed focus:border-blue-500 transition-colors"
           >
             {content.text === "" ? "" : null}
           </div>
-          <input
-            type="text"
-            placeholder="Теги"
-            value={tags}
-            onChange={(e) => setTags(e.target.value)}
-            className="p-2 outline-none w-full border-b border-gray-200"
-          />
+
+          {/* Выбор тегов */}
+          <div className="flex justify-end mb-5">
+            <button
+              type="button"
+              onClick={() => setShowTags(!showTags)}
+              className="flex items-center gap-1 text-gray-700 hover:text-blue-600 transition-colors"
+            >
+              <span>Теги</span>
+              <motion.svg
+                animate={{ rotate: showTags ? 180 : 0 }}
+                transition={{ duration: 0.3 }}
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </motion.svg>
+            </button>
+          </div>
+
+          <AnimatePresence>
+            {showTags && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
+              >
+                <TagBar selectedTags={tags} setSelectedTags={setTags} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Превью изображений */}
           {content.images.length > 0 && (
             <div className="mt-6 space-y-4">
               {content.images.map((image, i) => (
-                <div
+                <motion.div
                   key={i}
-                  className="p-4 bg-gray-100 rounded-xl flex flex-col items-center"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-4 bg-gray-100 rounded-lg flex flex-col items-center"
                 >
-                  {image instanceof File ? (
-                    <img
-                      src={URL.createObjectURL(image)}
-                      alt={`Preview ${i + 1}`}
-                      className="w-full max-h-96 object-contain rounded-lg"
-                    />
-                  ) : null}
-                  <button
+                  <img
+                    src={
+                      image instanceof File
+                        ? URL.createObjectURL(image)
+                        : getImage(image)
+                    }
+                    alt={`Preview ${i + 1}`}
+                    className="w-full max-h-96 object-contain rounded-md"
+                  />
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
                     type="button"
                     onClick={() => removeImage(i)}
-                    className="mt-2 text-sm text-red-500 hover:text-red-700 transition"
+                    className="mt-2 text-sm text-red-500 hover:text-red-700 transition-colors"
                   >
                     Удалить
-                  </button>
-                </div>
+                  </motion.button>
+                </motion.div>
               ))}
             </div>
           )}
         </div>
 
-        {error && <p className="text-black font-bold text-center">{error}</p>}
+        {error && <p className="font-bold text-center mt-4">{error}</p>}
+        <div className="flex justify-end">
+          {/* <button className="bg-gray-300 !text-gray-100 rounded-2xl py-3 px-3 transition-colors hover:bg-gray-400">
+            Черновик
+          </button> */}
 
-        <button
-          type="submit"
-          disabled={isPublishing}
-          className="w-full py-3 px-3 !text-white font-semibold rounded-xl bg-green-500 hover:bg-green-600 transition flex items-center justify-center"
-        >
-          {isPublishing ? (
-            <svg
-              className="animate-spin h-5 w-5 mr-3 text-white"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
+          <motion.button
+            type="submit"
+            disabled={isPublishing}
+            className="py-3 px-3 !text-white font-medium rounded-2xl bg-gray-300 hover:bg-green-300 transition-colors flex items-center justify-center"
+          >
+            {isPublishing ? (
+              "..."
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
                 stroke="currentColor"
-                strokeWidth="4"
-              ></circle>
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
-          ) : null}
-          {isPublishing ? "Публикация..." : "Опубликовать"}
-        </button>
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
+                />
+              </svg>
+            )}
+          </motion.button>
+        </div>
       </form>
 
       <AnimatePresence>
@@ -266,7 +310,8 @@ export default function CreateStory() {
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-5 left-1/2 -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50"
+            transition={{ duration: 0.3 }}
+            className="fixed bottom-5 left-1/2 -translate-x-1/2 bg-green-300 text-white px-6 py-3 rounded-md shadow-md"
           >
             Пост опубликован!
           </motion.div>

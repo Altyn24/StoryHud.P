@@ -139,14 +139,6 @@ export default function ChannelPage() {
         {posts.length === 0 ? (
           <div className="bg-gray-100 p-6 rounded-md text-center text-gray-600">
             <p>Истории отсутствуют</p>
-            {/* {currentUser?.uid === uid && (
-            <button
-              onClick={() => navigate("/create")}
-              className="mt-4 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
-            >
-              Написать первую историю
-            </button>
-          )} */}
           </div>
         ) : (
           <div className="space-y-4">
