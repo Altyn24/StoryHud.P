@@ -13,7 +13,7 @@ const DRAFT_KEY = "storyhub_draft";
 export default function CreateStory() {
   const user = useSelector((state) => state.auth.user);
   const [content, setContent] = useState({ title: null, text: "", images: [] });
-  const [tags, setTags] = useState([]); // массив тегов
+  const [tags, setTags] = useState([]);
   const [success, setSuccess] = useState(false);
   const [showTools, setShowTools] = useState(false);
   const [error, setError] = useState("");
@@ -99,7 +99,7 @@ export default function CreateStory() {
         text: content.text,
         images: uploadedImages,
         previewImage,
-        tags, // сохраняем массив тегов
+        tags,
         authorId: user.uid,
         authorName: user.name || "Аноним",
         createdAt: serverTimestamp(),
@@ -182,7 +182,7 @@ export default function CreateStory() {
               placeholder="Название"
               value={content.title}
               onChange={handleTitleChange}
-              className="w-full text-2xl font-semibold text-gray-900 outline-none mb-4 placeholder-gray-400"
+              className="w-full !text-2xl font-semibold text-gray-900 outline-none mb-4 placeholder-gray-400"
             />
           )}
 
@@ -273,10 +273,6 @@ export default function CreateStory() {
 
         {error && <p className="font-bold text-center mt-4">{error}</p>}
         <div className="flex justify-end">
-          {/* <button className="bg-gray-300 !text-gray-100 rounded-2xl py-3 px-3 transition-colors hover:bg-gray-400">
-            Черновик
-          </button> */}
-
           <motion.button
             type="submit"
             disabled={isPublishing}
