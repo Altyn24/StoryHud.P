@@ -104,7 +104,7 @@ const CommentsSection = ({ storyId }) => {
             initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -50 }}
-            className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg ${
+            className={`fixed top-4 pt-24 right-4 p-4 rounded-lg shadow-lg ${
               notification.isError ? "bg-red-500" : notification.onConfirm ? "bg-[#acc3db]" : "bg-green-500"
             } text-white flex items-center gap-2`}
           >
