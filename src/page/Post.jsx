@@ -57,7 +57,7 @@ const isFollowing = useSelector((state) =>
   return (
     <div className="max-w-3xl mx-auto p-4 pt-24">
       {story.title && (
-        <h1 className="text-3xl font-bold mb-2 text-[#333333]">
+        <h1 className="text-3xl font-bold mb-2">
           {story.title}
         </h1>
       )}
@@ -76,7 +76,7 @@ const isFollowing = useSelector((state) =>
         </Link>
         <button
           onClick={isFollowing ? handleUnfollow : handleFollow}
-          className={`rounded-3xl border-1 border-black px-3 py-2 hover:bg-black hover:!text-white transition-colors ${
+          className={`rounded-3xl border-1 border-black  px-3 py-2 hover:bg-black hover:!text-white transition-colors ${
             isFollowing ? "bg-black !text-white" : "bg-white"
           }`}
         >

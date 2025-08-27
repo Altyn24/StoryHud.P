@@ -6,6 +6,7 @@ import { Flex, Spin, message } from "antd";
 import { motion, AnimatePresence } from "framer-motion";
 import FeedHeader from "./FeedHeader";
 import { TAGS } from "./TegBar";
+import { useMemo } from "react";
 
 function Home() {
   const dispatch = useDispatch();
@@ -13,13 +14,14 @@ function Home() {
 
   const [selectedTag, setSelectedTag] = useState("Все");
 
-  useEffect(() => {
-    if (status === "idle") {
-      dispatch(fetchStories()).catch(() => {
-        message.error("Ошибка при загрузке историй");
-      });
-    }
-  }, [status, dispatch]);
+ useEffect(() => {
+  if (status !== "succeeded") {
+    dispatch(fetchStories()).catch(() => {
+      message.error("Ошибка при загрузке историй");
+    });
+  }
+}, [status, dispatch]);
+
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -31,15 +33,17 @@ function Home() {
     visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
   };
 
-const filteredStories =
-  selectedTag === "Все"
+const filteredStories = useMemo(() => {
+  return selectedTag === "Все"
     ? items
     : items.filter((story) => story.tags?.includes(selectedTag));
+}, [items, selectedTag]);
+
 
 
   return (
     <div className="flex">
-      <main className="max-w-xl mx-auto pt-24 container">
+      <main className="max-w-xl mx-auto pt-24 container mb-10">
         <FeedHeader
           tags={["Все", ...TAGS]}
           selectedTag={selectedTag}

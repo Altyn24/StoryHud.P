@@ -33,7 +33,7 @@ export default function TextEditorTools({
   };
 
   return (
-    <div className="absolute left-2 top-2 z-10">
+    <div className="z-10 absolute right-10 top-1">
       {/* Кнопка "+"
       <button
         type="button"
@@ -63,7 +63,7 @@ export default function TextEditorTools({
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -10 }}
-            className="absolute ml-12 bg-white border rounded-xl shadow-md p-4 flex gap-3 z-10 md:w-[150]"
+            className=" items-center bg-white border rounded-xl shadow-md px-4 py-2 flex gap-2 z-10 sm:w-[100]"
           >
             {/* Переключатель заголовка */}
             <button
@@ -71,7 +71,7 @@ export default function TextEditorTools({
               onClick={toggleTitle}
               className="text-gray-600 hover:text-black"
             >
-              {hasTitle ? "Убрать название" : "Название"}
+              {hasTitle ? "Без название" : "Название"}
             </button>
 
             {/* Загрузка изображения */}

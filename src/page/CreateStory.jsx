@@ -119,10 +119,10 @@ export default function CreateStory() {
   };
 
   return (
-    <div className="min-h-screen pt-24 bg-gray-50">
+    <div className="min-h-screen pt-24 bg-[var(--bg-color)] dark:bg-[var(--bg-color)]">
       <form
         onSubmit={handleSubmit}
-        className="max-w-3xl mx-auto p-6 bg-white border border-gray-200 rounded-lg"
+        className="max-w-3xl mx-auto p-6 dark:bg-[var(--bg-color)] border border-gray-200 rounded-lg"
       >
         {/* Панель инструментов */}
         <div className="relative">
@@ -131,7 +131,7 @@ export default function CreateStory() {
             onClick={() => setShowTools(!showTools)}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            className="absolute right-0 top-0 p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
+            className="absolute p-2 rounded-full right-0 bg-gray-200 dark:bg-gray-400 hover:bg-[#b7d5f1] transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -139,7 +139,7 @@ export default function CreateStory() {
               viewBox="0 0 24 24"
               strokeWidth={1.5}
               stroke="currentColor"
-              className="w-6 h-6"
+              className="w-6 h-6]"
             >
               <path
                 strokeLinecap="round"
@@ -151,9 +151,9 @@ export default function CreateStory() {
           <AnimatePresence>
             {showTools && (
               <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: -10 }}
+                exit={{ opacity: 0, x: 10 }}
                 transition={{ duration: 0.3 }}
                 className="mt-2"
               >
@@ -201,9 +201,9 @@ export default function CreateStory() {
             <button
               type="button"
               onClick={() => setShowTags(!showTags)}
-              className="flex items-center gap-1 text-gray-700 hover:text-blue-600 transition-colors"
+              className="flex items-center gap-1 text-gray-700 transition-colors"
             >
-              <span>Теги</span>
+              <span>Тема</span>
               <motion.svg
                 animate={{ rotate: showTags ? 180 : 0 }}
                 transition={{ duration: 0.3 }}
@@ -276,7 +276,7 @@ export default function CreateStory() {
           <motion.button
             type="submit"
             disabled={isPublishing}
-            className="py-3 px-3 !text-white font-medium rounded-2xl bg-gray-300 hover:bg-green-300 transition-colors flex items-center justify-center"
+            className="py-3 px-3 !text-white font-medium rounded-2xl bg-gray-300 dark:bg-gray-300 hover:bg-green-300 transition-colors flex items-center justify-center"
           >
             {isPublishing ? (
               "..."
