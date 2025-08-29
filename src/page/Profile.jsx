@@ -128,7 +128,7 @@ export default function Profile() {
               <p>У вас пока нет публикаций.</p>
               <button
                 onClick={() => navigate("/create")}
-                className="mt-4 bg-green-300 text-[var(--text-color)] px-4 py-2 rounded hover:bg-green-600"
+                className="mt-4 bg-[var(--bg-header)] text-[var(--text-color)] px-4 py-2 rounded cursor-pointer"
               >
                 Написать историю
               </button>
@@ -204,7 +204,7 @@ export default function Profile() {
                 <li key={ch.id}>
                   <Link
                     to={`/channel/${ch.id}`}
-                    className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded"
+                    className="flex items-center gap-2 hover:bg-[var(--bg-color)] p-2 rounded"
                   >
                     <img
                       src={ch.avatar || avatarDef}

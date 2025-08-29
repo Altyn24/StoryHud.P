@@ -6,6 +6,7 @@ import NavBar from "../page/NavBar";
 import avatarDef from "../assets/avatar-people-user-svgrepo-com.svg";
 import { setSearchQuery } from "../features/searchSlice";
 import SearchResult from "../page/Search";
+import { motion } from "framer-motion";
 
 function Header({ onMenuToggle }) {
   const isAuth = useSelector((state) => state.auth.isAuth);
@@ -95,21 +96,25 @@ function Header({ onMenuToggle }) {
           </div>
           <div className="flex items-center">
             <div className="relative flex items-center">
-              <div
+              <motion.div
+              initial={{opacity: 0, x: 30}}
+              animate={{opacity: 1, x: 0}}
                 className={`w-40 sm:w-64 ${
                   searchOpen ? "block" : "hidden sm:block"
                 }`}
               >
-                <input
+                <motion.input
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
                   type="text"
-                  className="rounded-xl bg-[#d5e5f4] dark:bg-gray-200 px-3 py-1 sm:px-4 sm:py-2 outline-none w-full text-sm sm:text-base text-[var(--text-color)] placeholder-[var(--text-color)] placeholder-opacity-50"
+                  className="rounded-xl bg-[var(--bg-input)] dark:bg-[var(--bg-input)] px-3 py-1 sm:px-4 sm:py-2 outline-none w-full text-sm sm:text-base text-[var(--text-color)] placeholder-[var(--text-color)] placeholder-opacity-50"
                   placeholder="Поиск"
                   value={searchQuery}
                   onChange={(e) => dispatch(setSearchQuery(e.target.value))}
                   onBlur={() => setSearchOpen(false)}
                 />
                 <SearchResult />
-              </div>
+              </motion.div>
               <button
                 onClick={toggleSearch}
                 className="sm:hidden p-2 text-[var(--text-color)]"

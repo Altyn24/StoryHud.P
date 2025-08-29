@@ -40,7 +40,7 @@ export const fetchFollowingDetails = createAsyncThunk(
       return {
         id: doc.id,
         ...data,
-        createdAt: convertTimestamp(data.createdAt), // <-- фикс сериализации
+        createdAt: convertTimestamp(data.createdAt),
       };
     });
   }
@@ -52,7 +52,7 @@ export const fetchOrCreateChannel = createAsyncThunk(
   async (userId, { getState }) => {
     const state = getState();
     if (state.channel.channelCache[userId]) {
-      return state.channel.channelCache[userId]; // Возвращаем из кеша
+      return state.channel.channelCache[userId];
     }
 
     const docRef = doc(db, "channels", userId);
@@ -67,7 +67,7 @@ export const fetchOrCreateChannel = createAsyncThunk(
     } else {
       const user = state.auth.user;
       const newChannel = {
-        title: user?.name ? `${user.name}'s Channel` : "Новый канал",
+        title: user?.name ? `${user.name}` : "Новый канал",
         description: "",
         createdAt: new Date().toISOString(),
         ownerId: userId,
@@ -83,7 +83,7 @@ export const fetchUserPosts = createAsyncThunk(
   async (userId, { getState }) => {
     const state = getState();
     if (state.channel.postsCache[userId]) {
-      return state.channel.postsCache[userId]; // Возвращаем из кеша
+      return state.channel.postsCache[userId];
     }
 
     const postsQuery = query(

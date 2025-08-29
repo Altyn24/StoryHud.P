@@ -8,6 +8,7 @@ import CommentsSection from "./CommentsSelection";
 import avatarDef from "../assets/avatar-people-user-svgrepo-com.svg";
 import { followUser, unfollowUser } from "../features/auth/channelSlice";
 import { message } from "antd";
+import parse from "html-react-parser"
 
 const Post = () => {
   const { id } = useParams();
@@ -76,8 +77,8 @@ const isFollowing = useSelector((state) =>
         </Link>
         <button
           onClick={isFollowing ? handleUnfollow : handleFollow}
-          className={`rounded-3xl border-1 border-black  px-3 py-2 hover:bg-black hover:!text-white transition-colors ${
-            isFollowing ? "bg-black !text-white" : "bg-white"
+          className={`rounded-3xl border-1 border-black   px-3 py-2 hover:bg-black hover:!text-white transition-colors ${
+            isFollowing ? "bg-black text-[var(--text-color)]" : "bg-[var(--color-bt)]"
           }`}
         >
           {isFollowing ? "Отписаться" : "Подписаться"}
@@ -91,8 +92,8 @@ const isFollowing = useSelector((state) =>
       </p>
 
       {story.text && (
-        <p className="text-gray-800 text-lg whitespace-pre-line mb-6">
-          {story.text}
+        <p className="text-[var(text-color)] text-lg whitespace-pre-line mb-6">
+          {parse(story.text)}
         </p>
       )}
 

@@ -63,13 +63,13 @@ export default function TextEditorTools({
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -10 }}
-            className=" items-center bg-white border rounded-xl shadow-md px-4 py-2 flex gap-2 z-10 sm:w-[100]"
+            className=" items-center bg-[var(--bg-input)] border rounded-xl shadow-md px-4 py-2 flex gap-2 z-10 sm:w-[100]"
           >
             {/* Переключатель заголовка */}
             <button
               type="button"
               onClick={toggleTitle}
-              className="text-gray-600 hover:text-black"
+              className="text-[var(--text-color)] hover:text-black"
             >
               {hasTitle ? "Без название" : "Название"}
             </button>

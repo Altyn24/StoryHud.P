@@ -117,7 +117,7 @@ const SidebarNav = ({ isOpen }) => {
               }
             >
               {item.icon}
-             
+             {item.label}
             </NavLink>
           ))}
         </div>

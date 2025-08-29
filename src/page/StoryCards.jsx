@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback } from "react";
 import { collection, query, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { lazy, Suspense } from "react";
+import ReactHtmlParser from "html-react-parser";
 
 const LikeButton = lazy(() => import("./LikeButton.jsx"));
 
@@ -37,7 +38,10 @@ const StoryCards = ({ story }) => {
       style={{ fontFamily: '"Roboto Mono", monospace' }}
     >
       <div className="flex items-center justify-between mb-4">
-        <Link to={`/channel/${story.authorId}`} className="flex items-center gap-3">
+        <Link
+          to={`/channel/${story.authorId}`}
+          className="flex items-center gap-3"
+        >
           <img
             src={user?.photoURL || story.authorPhoto || avatarDef}
             className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-600"
@@ -58,9 +62,10 @@ const StoryCards = ({ story }) => {
                   {story.title}
                 </h3>
               )}
+
               {story.text && (
                 <p className="text-[var(--text-color)] text-base line-clamp-3 opacity-80">
-                  {previewText}
+                  {ReactHtmlParser(previewText)}
                 </p>
               )}
             </div>

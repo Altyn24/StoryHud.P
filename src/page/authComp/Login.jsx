@@ -8,8 +8,10 @@ function Login() {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [state, setState] = useState(false)
 
   const handleSubmit = async (e) => {
+    setState(true)
     e.preventDefault();
     if (!email || !password) {
       alert("Пожалуйста, заполните все поля");
@@ -33,6 +35,7 @@ function Login() {
       );
       navigate("/profile");
     }
+    setState(false)
   };
 
   return (
@@ -64,6 +67,7 @@ function Login() {
           <button
             type="submit"
             className="w-full !text-white bg-green-500 p-2 rounded-md"
+            disabled={state}
           >
             Войти
           </button>

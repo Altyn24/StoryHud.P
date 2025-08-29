@@ -11,7 +11,7 @@ const ProfileSetting = () => {
   const [avatar, setAvatar] = useState(null);
   const [preview, setPreview] = useState(user?.photoURL || avatarDef);
   const [error, setError] = useState("");
- const darkMode = useSelector((state) => state.theme.darkMode);
+  const darkMode = useSelector((state) => state.theme.darkMode);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -51,7 +51,7 @@ const ProfileSetting = () => {
     <div className="max-w-md mx-auto px-4 py-10 pt-24 bg-background text-text transition-colors duration-300">
       <h1 className="text-3xl font-bold text-center mb-6">Настройки профиля</h1>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 gap-5">
         {/* Аватар */}
         <div className="flex justify-center mb-4">
           <img
@@ -60,45 +60,42 @@ const ProfileSetting = () => {
             className="w-24 h-24 rounded-full object-cover border-2 border-border"
           />
         </div>
+        <div className="">
+          <input
+            type="text"
+            placeholder="Имя"
+            className="w-full shadow p-3 bg-card text-text placeholder-gray-400 transition-colors duration-300"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
 
-        {/* Имя */}
-        <input
-          type="text"
-          placeholder="Имя"
-          className="w-full p-3 border border-border rounded bg-card text-text placeholder-gray-400 transition-colors duration-300"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
+          <input
+            type="file"
+            accept="image/*"
+            className="w-full p-3  shadow bg-card text-text transition-colors duration-300"
+            onChange={handleAvatarChange}
+          />
 
-        {/* Загрузка аватара */}
-        <input
-          type="file"
-          accept="image/*"
-          className="w-full p-3 border border-border rounded bg-card text-text transition-colors duration-300"
-          onChange={handleAvatarChange}
-        />
+          <button
+            type="submit"
+            className="w-full p-3 shadow transition-colors duration-300"
+          >
+            Сохранить
+          </button>
 
-        {/* Сохранить */}
-        <button
-          type="submit"
-          className="w-full p-3 bg-primary text-background rounded hover:bg-primary-hover transition-colors duration-300"
-        >
-          Сохранить
-        </button>
-
-        {error && <p className="text-error font-medium mt-2">{error}</p>}
+          {error && <p className="text-error font-medium mt-2">{error}</p>}
+        </div>
       </form>
 
-      {/* Переключатель темы */}
       <div className="mt-8">
         <label className="flex items-center justify-between bg-card p-3 rounded shadow transition-colors duration-300">
           <span className="text-lg">Тёмная тема</span>
           <button
             onClick={() => dispatch(toggleTheme())}
-            className="px-4 py-2 bg-background border border-border text-text rounded hover:opacity-80 transition-colors duration-300"
+            className="px-4 py-2 text-text rounded hover:opacity-80 transition-colors duration-300"
           >
-            {darkMode ? "Отключить 🌞" : "Включить 🌙"}
+            {darkMode ? "Отключить" : "Включить"}
           </button>
         </label>
       </div>

@@ -7,6 +7,7 @@ import { instanse } from "./instans/instans";
 import TextEditorTools from "./TextEditorTools";
 import TagBar, { TAGS } from "./TegBar";
 import { getImage } from "../components/getImage";
+import { useNavigate } from "react-router-dom";
 
 const DRAFT_KEY = "storyhub_draft";
 
@@ -20,6 +21,7 @@ export default function CreateStory() {
   const [isPublishing, setIsPublishing] = useState(false);
   const [showTags, setShowTags] = useState(false);
   const editorRef = useRef(null);
+  const navigate = useNavigate()
 
   useEffect(() => {
     const saved = localStorage.getItem(DRAFT_KEY);
@@ -115,6 +117,8 @@ export default function CreateStory() {
       setError("Ошибка при публикации. Попробуйте снова.");
     } finally {
       setIsPublishing(false);
+      navigate('/profile')
+
     }
   };
 

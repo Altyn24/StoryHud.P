@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-export const TAGS = ["Спорт", "Игры", "Наука", "Технологии", "Фильмы"];
+export const TAGS = ["Спорт", "Игры", "Наука", "Технологии", "Фильмы", 'Книги'];
 
 export default function TagBar({ selectedTags, setSelectedTags }) {
   const toggleTag = (tag) => {
@@ -21,7 +21,7 @@ export default function TagBar({ selectedTags, setSelectedTags }) {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
-            className={`px-3 py-1 rounded-full text-sm border-none transition-all ${
+            className={`px-3 py-1 rounded-full !text-black text-sm border-none transition-all ${
               selectedTags.includes(tag)
                 ? "bg-[#b7d5f1] !text-black"
                 : "bg-gray-100 hover:bg-[#d5e5f4]"
