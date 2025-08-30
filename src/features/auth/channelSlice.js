@@ -11,7 +11,7 @@ import {
   orderBy,
   deleteDoc,
 } from "firebase/firestore";
-import { deleteStory } from "../stories/storiesSlice"; // Импортируем deleteStory для extraReducers
+import { deleteStory } from "../stories/storiesSlice";
 
 const convertTimestamp = (ts) => {
   if (!ts) return null;
