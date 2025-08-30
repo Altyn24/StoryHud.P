@@ -2,7 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import { db } from "../firebase/firebaseConfig";
-import { collection, addDoc, serverTimestamp, getDoc } from "firebase/firestore"; // Добавили getDoc
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  getDoc,
+} from "firebase/firestore";
 import { fetchStories } from "../features/stories/storiesSlice";
 import { instanse } from "./instans/instans";
 import { useDispatch } from "react-redux";
@@ -107,7 +112,6 @@ export default function CreateStory() {
 
       const previewImage = uploadedImages[0] || null;
 
-      // Создаем пост и получаем ref
       const docRef = await addDoc(collection(db, "stories"), {
         title: content.title || null,
         text: content.text,
@@ -118,24 +122,16 @@ export default function CreateStory() {
         authorName: user.name || "Аноним",
         createdAt: serverTimestamp(),
       });
-
-      // Получаем полный новый пост из Firebase (с id и реальным timestamp)
       const newStorySnap = await getDoc(docRef);
       const newStory = {
         id: docRef.id,
         ...newStorySnap.data(),
-        createdAt: newStorySnap.data().createdAt?.toDate().toISOString() || null,
+        createdAt:
+          newStorySnap.data().createdAt?.toDate().toISOString() || null,
       };
-
-      // Добавляем пост в Redux для ленты (storiesSlice)
       dispatch(addStory(newStory));
 
-      // Добавляем пост в Redux для профиля (channelSlice)
       dispatch(addPostToCache({ userId: user.uid, post: newStory }));
-
-      // Убираем старый dispatch(fetchStories(user.uid)); он был некорректным
-      // Если нужно полный refetch, можно добавить dispatch(fetchStories()); но manual add быстрее
-
       setContent({ title: null, text: "", images: [] });
       setTags([]);
       localStorage.removeItem(DRAFT_KEY);

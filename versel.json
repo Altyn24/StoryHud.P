@@ -1,12 +1,8 @@
 {
   "rewrites": [
-<<<<<<< HEAD
     {
       "source": "/(.*)",
-      "destination": "/"
+      "destination": "/index.html"
     }
-=======
-    { "source": "/(.*)", "destination": "/index.html" }
->>>>>>> Cotegories
   ]
 }

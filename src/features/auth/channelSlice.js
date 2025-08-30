@@ -184,14 +184,13 @@ const channelSlice = createSlice({
       state.postsCache[userId].unshift(post);
       state.posts = state.postsCache[userId];
     },
-    // Новый редукер: Удаляет пост из кэша пользователя
     removePostFromCache(state, action) {
       const { userId, storyId } = action.payload;
       if (state.postsCache[userId]) {
         state.postsCache[userId] = state.postsCache[userId].filter(
           (post) => post.id !== storyId
         );
-        state.posts = state.postsCache[userId]; // Обновляем state.posts для consistency
+        state.posts = state.postsCache[userId];
       }
     },
   },
@@ -229,7 +228,6 @@ const channelSlice = createSlice({
       .addCase(fetchFollowingDetails.fulfilled, (state, action) => {
         state.followingDetails = action.payload;
       })
-      // Новый extraReducer: Обработка deleteStory для удаления из postsCache
       .addCase(deleteStory.fulfilled, (state, action) => {
         const storyId = action.payload;
         const userId = Object.keys(state.postsCache).find((uid) =>
@@ -239,7 +237,7 @@ const channelSlice = createSlice({
           state.postsCache[userId] = state.postsCache[userId].filter(
             (post) => post.id !== storyId
           );
-          state.posts = state.postsCache[userId]; // Обновляем state.posts
+          state.posts = state.postsCache[userId];
         }
       });
   },
