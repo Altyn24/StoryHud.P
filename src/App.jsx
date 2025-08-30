@@ -15,8 +15,19 @@ import Post from "./page/Post";
 import ProfileSetting from "./page/ProfileSetting";
 import Following from "./page/Following";
 import ChannelPage from "./page/ChannelPage";
+import { useSelector } from "react-redux";
+import { useEffect } from "react";
 
 function App() {
+  const darkMode = useSelector((state) => state.theme.darkMode);
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [darkMode])
   return (
     <AuthProvider>
       <Header />

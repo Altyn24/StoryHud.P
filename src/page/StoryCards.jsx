@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback } from "react";
 import { collection, query, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { lazy, Suspense } from "react";
+import ReactHtmlParser from "html-react-parser";
 
 const LikeButton = lazy(() => import("./LikeButton.jsx"));
 
@@ -32,23 +33,24 @@ const StoryCards = ({ story }) => {
   }, [fetchCommentCount]);
 
   return (
-    <div className="bg-white border-b border-gray-200 p-6 hover:bg-gray-50 transition-colors">
+    <div
+      className="bg-[var(--bg-color)] border-b border-gray-300 dark:border-gray-600 p-6 transition-colors"
+      style={{ fontFamily: '"Roboto Mono", monospace' }}
+    >
       <div className="flex items-center justify-between mb-4">
-        <Link to={`/channel/${story.authorId}`} className="flex items-center gap-3">
+        <Link
+          to={`/channel/${story.authorId}`}
+          className="flex items-center gap-3"
+        >
           <img
             src={user?.photoURL || story.authorPhoto || avatarDef}
-            className="w-10 h-10 rounded-full border border-gray-300"
+            className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-600"
             alt="avatar"
           />
-          <p className="text-sm font-medium text-gray-900 hover:underline">
+          <p className="text-sm font-medium text-[var(--text-color)] hover:underline">
             {story.authorName || "Неизвестный автор"}
           </p>
         </Link>
-        {/* <p className="text-sm text-gray-500">
-          {story.createdAt
-            ? new Date(story.createdAt).toLocaleDateString()
-            : "Дата неизвестна"}
-        </p> */}
       </div>
 
       <Link to={`/post/${story.id}`} className="block">
@@ -56,13 +58,14 @@ const StoryCards = ({ story }) => {
           <div className="flex flex-col sm:flex-row gap-6">
             <div className="flex-1">
               {story.title && (
-                <h3 className="text-2xl font-semibold text-gray-900 mb-2 leading-tight">
+                <h3 className="text-2xl font-semibold text-[var(--text-color)] mb-2 leading-tight">
                   {story.title}
                 </h3>
               )}
+
               {story.text && (
-                <p className="text-gray-700 text-base line-clamp-3">
-                  {previewText}
+                <p className="text-[var(--text-color)] text-base line-clamp-3 opacity-80">
+                  {ReactHtmlParser(previewText)}
                 </p>
               )}
             </div>
@@ -89,8 +92,14 @@ const StoryCards = ({ story }) => {
         )}
       </Link>
 
-      <div className="mt-4 flex items-center gap-6 text-sm text-gray-600 justify-end">
-        <Suspense fallback={<div className="text-sm text-gray-400">Загрузка...</div>}>
+      <div className="mt-4 flex items-center gap-6 text-sm text-[var(--text-color)] justify-end opacity-70">
+        <Suspense
+          fallback={
+            <div className="text-sm text-[var(--text-color)] opacity-50">
+              Загрузка...
+            </div>
+          }
+        >
           <LikeButton storyId={story.id} />
         </Suspense>
         <div className="flex items-center gap-1">
@@ -100,7 +109,7 @@ const StoryCards = ({ story }) => {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="size-5"
+            className="size-5 text-[var(--text-color)] opacity-70"
           >
             <path
               strokeLinecap="round"

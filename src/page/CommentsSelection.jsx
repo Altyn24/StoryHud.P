@@ -162,7 +162,7 @@ const CommentsSection = ({ storyId }) => {
         </div>
       </form>
 
-      <div className="space-y-4">
+      <div className="space-y-4 mb-15">
         <AnimatePresence>
           {comments.map((comment) => (
             <motion.div

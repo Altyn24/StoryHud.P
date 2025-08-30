@@ -113,7 +113,7 @@ export default function ChannelPage() {
                 />
                 <div>
                   <h1 className="text-3xl">{channelOwner.name}</h1>
-                  <div className="flex gap-4 text-sm text-gray-600">
+                  <div className="flex gap-4 text-sm text-[var(--text-color)]">
                     <span>Подписчики: {followers.length}</span>
                   </div>
                 </div>
@@ -122,14 +122,14 @@ export default function ChannelPage() {
                 <button
                   onClick={isFollowing ? handleUnfollow : handleFollow}
                   className={`cursor-pointer rounded-3xl border-1 border-black px-3 py-2 hover:bg-black hover:!text-white transition-colors ${
-                    isFollowing ? "bg-black !text-white" : "bg-white"
+                    isFollowing ? "bg-black text-[var(--text-color)]" : "bg-[var(--color-bt)]"
                   }`}
                 >
                   {isFollowing ? "Отписаться" : "Подписаться"}
                 </button>
               )}
             </div>
-            <p className="text-gray-500 text-sm">{channelOwner.email}</p>
+            <p className="text-[var(--text-color)] text-sm">{channelOwner.email}</p>
             <p className="text-gray-600 mb-4">
               {channel?.description || "Описание отсутствует"}
             </p>
@@ -137,7 +137,7 @@ export default function ChannelPage() {
         </div>
 
         {posts.length === 0 ? (
-          <div className="bg-gray-100 p-6 rounded-md text-center text-gray-600">
+          <div className="bg-gray-100 p-6 rounded-md text-center text-[var(--text-color)]">
             <p>Истории отсутствуют</p>
           </div>
         ) : (

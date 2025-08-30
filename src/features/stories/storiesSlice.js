@@ -72,7 +72,18 @@ const storiesSlice = createSlice({
     status: "idle",
     error: null,
   },
-  reducers: {},
+  reducers: {
+    updateUserPosts(state, action) {
+      const { userId, posts } = action.payload;
+      // удаляем старые посты пользователя и добавляем новые
+      state.items = state.items.filter(post => post.authorId !== userId).concat(posts);
+    },
+    // Новый редукер: Добавляет новый пост в начало списка (для ленты, assuming desc sort)
+    addStory(state, action) {
+      const newStory = action.payload;
+      state.items.unshift(newStory); // Добавляем в начало для desc order
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchStories.pending, (state) => {
@@ -126,5 +137,5 @@ const storiesSlice = createSlice({
       });
   },
 });
-
+export const { updateUserPosts, addStory } = storiesSlice.actions; // Экспортируем новый редукер
 export default storiesSlice.reducer;

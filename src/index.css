@@ -2,13 +2,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 @import "antd/dist/reset.css";
-
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+@import "./style/theme.css";
 
 body {
-  font-family: 'Roboto Mono', monospace;
+  font-family: "Roboto Mono", monospace;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
 }
 
 

@@ -6,13 +6,16 @@ import { Link, useNavigate } from "react-router-dom";
 const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [state, setState] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
+    setState(true);
     e.preventDefault();
     if (password.length < 6) {
       alert("Пароль должен быть больше 6 символов");
+       setState(false);
       return;
     }
 
@@ -22,12 +25,13 @@ const SignUp = () => {
     if (resultAction) {
       navigate("/profileset");
     }
+     setState(false);
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-white">
+    <div className="flex justify-center items-center h-screen bg-[var(--bg-color)]">
       <div className="max-w-md w-full p-8 shadow-md rounded">
-        <h1 className="text-3xl font-bold text-center mb-4 text-gray-800">
+        <h1 className="text-3xl font-bold text-center mb-4 text-[var(--text-color)]">
           WriteSide
         </h1>
         <p className="text-center text-gray-600 mb-6">Создайте аккаунт</p>
@@ -53,6 +57,7 @@ const SignUp = () => {
           <button
             type="submit"
             className="w-full !text-white bg-green-500 p-2 rounded-md"
+            disabled={state}
           >
             Зарегистрироваться
           </button>

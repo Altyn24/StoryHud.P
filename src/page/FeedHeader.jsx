@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 export default function FeedHeader({ tags, selectedTag, setSelectedTag }) {
   return (
-    <div className="border-b border-gray-200 sticky top-0 bg-white z-10">
+    <div className="border-b border-gray-200 sticky top-[64px] dark:bg-[var(--bg-color)] z-10">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}

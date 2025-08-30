@@ -1,13 +1,23 @@
+/* Светлая тема */
 :root {
+  --bg-header: #acc3db;
   --bg-color: #ffffff;
-  --text-color: #000000;
-  --card-bg: #f5f5f5;
-  --link-color: #1a0dab;
+  --text-color: #111111;
+  --color-bt: #ffffff;
+  /* --border-color: #c7c7c7cc; */
+  --bg-input: #f3f3f3;
+  --primary: #acc3db;
+  --error: #ef4444;
 }
 
+/* Тёмная тема */
 .dark {
-  --bg-color: #121212;
-  --text-color: #ffffff;
-  --card-bg: #1e1e1e;
-  --link-color: #8ab4f8;
+  --bg-header: #313131;
+  --bg-color: #313131;
+  --text-color: #d2d0d0;
+  --color-bt: #1b1b1b;
+  --bg-input: #9c9b9b11;
+  --primary: #040404;
+  --primary-hover: #acc3db;
+  --error: #f87171;
 }
