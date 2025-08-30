@@ -11,6 +11,7 @@ import {
   orderBy,
   deleteDoc,
 } from "firebase/firestore";
+import { deleteStory } from "../stories/storiesSlice"; // Импортируем deleteStory для extraReducers
 
 const convertTimestamp = (ts) => {
   if (!ts) return null;
@@ -23,14 +24,12 @@ const convertTimestamp = (ts) => {
 export const fetchFollowingDetails = createAsyncThunk(
   "channel/fetchFollowingDetails",
   async (userId) => {
-    // 1. Получаем все ID на кого подписан пользователь
     const followingRef = collection(db, "users", userId, "following");
     const querySnapshot = await getDocs(followingRef);
     const ids = querySnapshot.docs.map((doc) => doc.data().followedId);
 
     if (ids.length === 0) return [];
 
-    // 2. Достаём сами каналы
     const channelsRef = collection(db, "channels");
     const q = query(channelsRef, where("__name__", "in", ids));
     const channelsSnap = await getDocs(q);
@@ -45,7 +44,6 @@ export const fetchFollowingDetails = createAsyncThunk(
     });
   }
 );
-
 
 export const fetchOrCreateChannel = createAsyncThunk(
   "channel/fetchOrCreateChannel",
@@ -104,7 +102,6 @@ export const fetchUserPosts = createAsyncThunk(
   }
 );
 
-// --- follow/unfollow и fetchFollowing/fetchFollowers без изменений ---
 export const followUser = createAsyncThunk(
   "channel/followUser",
   async ({ followerId, followedId }, { rejectWithValue }) => {
@@ -165,7 +162,6 @@ export const fetchFollowers = createAsyncThunk(
   }
 );
 
-// --- Slice ---
 const channelSlice = createSlice({
   name: "channel",
   initialState: {
@@ -176,10 +172,29 @@ const channelSlice = createSlice({
     followingDetails: [],
     loading: false,
     error: null,
-    channelCache: {}, // <--- кеш каналов
-    postsCache: {}, // <--- кеш постов
+    channelCache: {},
+    postsCache: {},
   },
-  reducers: {},
+  reducers: {
+    addPostToCache(state, action) {
+      const { userId, post } = action.payload;
+      if (!state.postsCache[userId]) {
+        state.postsCache[userId] = [];
+      }
+      state.postsCache[userId].unshift(post);
+      state.posts = state.postsCache[userId];
+    },
+    // Новый редукер: Удаляет пост из кэша пользователя
+    removePostFromCache(state, action) {
+      const { userId, storyId } = action.payload;
+      if (state.postsCache[userId]) {
+        state.postsCache[userId] = state.postsCache[userId].filter(
+          (post) => post.id !== storyId
+        );
+        state.posts = state.postsCache[userId]; // Обновляем state.posts для consistency
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchOrCreateChannel.fulfilled, (state, action) => {
@@ -213,8 +228,22 @@ const channelSlice = createSlice({
       })
       .addCase(fetchFollowingDetails.fulfilled, (state, action) => {
         state.followingDetails = action.payload;
+      })
+      // Новый extraReducer: Обработка deleteStory для удаления из postsCache
+      .addCase(deleteStory.fulfilled, (state, action) => {
+        const storyId = action.payload;
+        const userId = Object.keys(state.postsCache).find((uid) =>
+          state.postsCache[uid].some((post) => post.id === storyId)
+        );
+        if (userId) {
+          state.postsCache[userId] = state.postsCache[userId].filter(
+            (post) => post.id !== storyId
+          );
+          state.posts = state.postsCache[userId]; // Обновляем state.posts
+        }
       });
   },
 });
 
+export const { addPostToCache, removePostFromCache } = channelSlice.actions;
 export default channelSlice.reducer;

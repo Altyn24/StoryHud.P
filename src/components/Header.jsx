@@ -107,7 +107,7 @@ function Header({ onMenuToggle }) {
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                   type="text"
-                  className="rounded-xl bg-[var(--bg-input)] dark:bg-[var(--bg-input)] px-3 py-1 sm:px-4 sm:py-2 outline-none w-full text-sm sm:text-base text-[var(--text-color)] placeholder-[var(--text-color)] placeholder-opacity-50"
+                  className="rounded-xl backdrop-blur-2xl bg-[var(--bg-input)] dark:bg-[var(--bg-input)] px-3 py-1 sm:px-4 sm:py-2 outline-none w-full text-sm sm:text-base text-[var(--text-color)] placeholder-[var(--text-color)] placeholder-opacity-50"
                   placeholder="Поиск"
                   value={searchQuery}
                   onChange={(e) => dispatch(setSearchQuery(e.target.value))}
@@ -148,7 +148,7 @@ function Header({ onMenuToggle }) {
             ) : (
               <Link
                 to="/signup"
-                className="!text-white bg-black rounded-3xl px-3 py-1 text-sm sm:text-base"
+                className="!text-white mx-3 bg-black rounded-3xl px-3 py-1 text-sm sm:text-base"
               >
                 Регистрация
               </Link>

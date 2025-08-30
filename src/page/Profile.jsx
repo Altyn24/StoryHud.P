@@ -22,7 +22,7 @@ export default function Profile() {
   const [editedText, setEditedText] = useState("");
   const [editedImage, setEditedImage] = useState(null);
   const [menuVisible, setMenuVisible] = useState(null);
-  const [activeTab, setActiveTab] = useState("posts"); // Состояние для активной вкладки
+  const [activeTab, setActiveTab] = useState("posts");
 
   const menuRefs = useRef({});
 
@@ -136,7 +136,7 @@ export default function Profile() {
           ) : (
             <div className="space-y-4">
               {posts.map((story) => (
-                <div key={story.id} className="relative">
+                <div key={story.id + (story.updateAt || story.createdAt)} className="relative">
                   <StoryCards story={story} />
                   {user.uid === story.authorId && (
                     <>

@@ -30,7 +30,7 @@ export default function SearchResults() {
             <Link
               key={story.id}
               to={`/post/${story.id}`}
-              className="flex items-center px-4 py-2 hover:bg-gray-100 transition-colors duration-200 border-b border-gray-200 last:border-b-0"
+              className="flex items-center backdrop-blur-2xl px-4 py-2 hover:bg-gray-100 transition-colors duration-200 border-b border-gray-200 last:border-b-0"
             >
               <span className="text-sm sm:text-base text-[var(--text-color)]">
                 

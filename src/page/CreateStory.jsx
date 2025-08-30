@@ -2,11 +2,15 @@ import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import { db } from "../firebase/firebaseConfig";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, getDoc } from "firebase/firestore"; // Добавили getDoc
+import { fetchStories } from "../features/stories/storiesSlice";
 import { instanse } from "./instans/instans";
+import { useDispatch } from "react-redux";
 import TextEditorTools from "./TextEditorTools";
 import TagBar, { TAGS } from "./TegBar";
 import { getImage } from "../components/getImage";
+import { addStory } from "../features/stories/storiesSlice"; // Импортируем новый редукер
+import { addPostToCache } from "../features/auth/channelSlice"; // Импортируем новый редукер (путь к channelSlice проверь)
 import { useNavigate } from "react-router-dom";
 
 const DRAFT_KEY = "storyhub_draft";
@@ -20,8 +24,9 @@ export default function CreateStory() {
   const [error, setError] = useState("");
   const [isPublishing, setIsPublishing] = useState(false);
   const [showTags, setShowTags] = useState(false);
+  const dispatch = useDispatch();
   const editorRef = useRef(null);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
     const saved = localStorage.getItem(DRAFT_KEY);
@@ -47,6 +52,12 @@ export default function CreateStory() {
       })
     );
   }, [content, tags]);
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/signup");
+    }
+  }, [user, navigate]);
 
   const handleTextChange = (e) => {
     const newText = e.target.innerHTML;
@@ -96,7 +107,8 @@ export default function CreateStory() {
 
       const previewImage = uploadedImages[0] || null;
 
-      await addDoc(collection(db, "stories"), {
+      // Создаем пост и получаем ref
+      const docRef = await addDoc(collection(db, "stories"), {
         title: content.title || null,
         text: content.text,
         images: uploadedImages,
@@ -106,6 +118,23 @@ export default function CreateStory() {
         authorName: user.name || "Аноним",
         createdAt: serverTimestamp(),
       });
+
+      // Получаем полный новый пост из Firebase (с id и реальным timestamp)
+      const newStorySnap = await getDoc(docRef);
+      const newStory = {
+        id: docRef.id,
+        ...newStorySnap.data(),
+        createdAt: newStorySnap.data().createdAt?.toDate().toISOString() || null,
+      };
+
+      // Добавляем пост в Redux для ленты (storiesSlice)
+      dispatch(addStory(newStory));
+
+      // Добавляем пост в Redux для профиля (channelSlice)
+      dispatch(addPostToCache({ userId: user.uid, post: newStory }));
+
+      // Убираем старый dispatch(fetchStories(user.uid)); он был некорректным
+      // Если нужно полный refetch, можно добавить dispatch(fetchStories()); но manual add быстрее
 
       setContent({ title: null, text: "", images: [] });
       setTags([]);
@@ -117,8 +146,7 @@ export default function CreateStory() {
       setError("Ошибка при публикации. Попробуйте снова.");
     } finally {
       setIsPublishing(false);
-      navigate('/profile')
-
+      navigate("/profile");
     }
   };
 
