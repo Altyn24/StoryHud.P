@@ -16,13 +16,13 @@ const NotFound = () => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -50 }}
         transition={{ duration: 0.5 }}
-        className="min-h-screen flex flex-col items-center justify-center pt-24 pb-10 bg-gray-100"
+        className="min-h-screen flex flex-col items-center justify-center pt-24 pb-10 bg-[var(--bg-color)] text-[var(--text-color)] px-4 text-center"
       >
         <motion.h1
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}
-          className="text-8xl font-bold text-blue-500 mb-4"
+          className="text-8xl font-bold text-[var(--text-color)] mb-4"
           aria-label="Ошибка 404"
         >
           404
@@ -42,7 +42,7 @@ const NotFound = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.5 }}
           onClick={handleClick}
-          className="bg-blue-500 !text-white px-6 py-3 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="bg-[var(--bg-header)] !text-white px-6 py-3 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           aria-label="Вернуться на главную страницу"
         >
           Вернуться на главную

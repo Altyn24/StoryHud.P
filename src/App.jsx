@@ -13,7 +13,6 @@ import CreateStory from "./page/CreateStory";
 import Search from "./page/Search";
 import Post from "./page/Post";
 import ProfileSetting from "./page/ProfileSetting";
-import Following from "./page/Following";
 import ChannelPage from "./page/ChannelPage";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
@@ -40,7 +39,6 @@ function App() {
         <Route path="/post/:id" element={<Post />} />
         <Route path="/channel/:uid" element={<ChannelPage/>}/>
         <Route path="/profileset" element={<ProfileSetting />} />
-        <Route path="/following" element={<Following />} />
         <Route path="/create" element={<CreateStory />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="*" element={<NotFound />} />

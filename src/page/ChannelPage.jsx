@@ -94,7 +94,10 @@ export default function ChannelPage() {
   if (!channelOwner) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <p className="text-lg text-gray-600">Канал не найден</p>
+        {/* <p className="text-lg text-gray-600"></p> */}
+        <Flex align="center" gap="middle">
+          <Spin size="large" />
+        </Flex>
       </div>
     );
   }
@@ -121,15 +124,19 @@ export default function ChannelPage() {
               {currentUser?.uid !== uid && (
                 <button
                   onClick={isFollowing ? handleUnfollow : handleFollow}
-                  className={`cursor-pointer rounded-3xl border-1 border-black px-3 py-2 hover:bg-black hover:!text-white transition-colors ${
-                    isFollowing ? "bg-black text-[var(--text-color)]" : "bg-[var(--color-bt)]"
+                  className={`cursor-pointer rounded-3xl text-[var(--text-color)] border-1 border-black px-3 py-2 hover:bg-black hover:!text-white transition-colors ${
+                    isFollowing
+                      ? "bg-black text-[var(--text-color)]"
+                      : "bg-[var(--color-bt)]"
                   }`}
                 >
                   {isFollowing ? "Отписаться" : "Подписаться"}
                 </button>
               )}
             </div>
-            <p className="text-[var(--text-color)] text-sm">{channelOwner.email}</p>
+            <p className="text-[var(--text-color)] text-sm">
+              {channelOwner.email}
+            </p>
             <p className="text-gray-600 mb-4">
               {channel?.description || "Описание отсутствует"}
             </p>
@@ -141,7 +148,7 @@ export default function ChannelPage() {
             <p>Истории отсутствуют</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-4 mb-10">
             {posts.map((story) => (
               <StoryCards key={story.id} story={story} />
             ))}

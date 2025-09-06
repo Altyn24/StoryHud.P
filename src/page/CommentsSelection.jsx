@@ -105,7 +105,7 @@ const CommentsSection = ({ storyId }) => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -50 }}
             className={`fixed top-4 pt-24 right-4 p-4 rounded-lg shadow-lg ${
-              notification.isError ? "bg-red-500" : notification.onConfirm ? "bg-[#acc3db]" : "bg-green-500"
+              notification.isError ? "bg-red-500" : notification.onConfirm ? "bg-[var(--bg-header)]" : "bg-green-500"
             } text-white flex items-center gap-2`}
           >
             <span>{notification.message}</span>
@@ -153,7 +153,7 @@ const CommentsSection = ({ storyId }) => {
           {replyTo && (
             <button
               type="button"
-              className="bg-gray-300 text-black px-4 py-2 rounded-2xl hover:bg-gray-400 transition-colors"
+              className="bg-[var(--bg-header)] text-black px-4 py-2 rounded-2xl hover:bg-gray-400 transition-colors"
               onClick={() => setReplyTo(null)}
             >
               Отмена
@@ -205,18 +205,18 @@ const CommentsSection = ({ storyId }) => {
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.8 }}
-                            className="absolute right-0 mt-2 w-32 bg-white shadow-lg rounded-lg z-10"
+                            className="absolute right-0 mt-2 w-32 bg-[var(--bg-header)] shadow-lg rounded-lg z-10"
                           >
                             <button
                               onClick={() => handleReply(comment)}
-                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-600"
                             >
                               Ответить
                             </button>
                             {comment.authorId === user?.uid && (
                               <button
                                 onClick={() => handleDeleteComment(comment.id)}
-                                className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100"
+                                className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-600"
                               >
                                 Удалить
                               </button>
@@ -226,7 +226,7 @@ const CommentsSection = ({ storyId }) => {
                       </AnimatePresence>
                     </div>
                   </div>
-                  <p className="text-gray-700">{comment.text}</p>
+                  <p className="text-[var(--text-color)]">{comment.text}</p>
                 </div>
               </div>
               {comment.replies && comment.replies.length > 0 && (
@@ -275,18 +275,18 @@ const CommentsSection = ({ storyId }) => {
                                     initial={{ opacity: 0, scale: 0.8 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.8 }}
-                                    className="absolute right-0 mt-2 w-32 bg-white shadow-lg rounded-lg z-10"
+                                    className="absolute right-0 mt-2 w-32 bg-[var(--bg-header)] shadow-lg rounded-lg z-10"
                                   >
                                     <button
                                       onClick={() => handleReply(reply)}
-                                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-600"
                                     >
                                       Ответить
                                     </button>
                                     {reply.authorId === user?.uid && (
                                       <button
                                         onClick={() => handleDeleteComment(reply.id)}
-                                        className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100"
+                                        className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-600"
                                       >
                                         Удалить
                                       </button>
@@ -296,7 +296,7 @@ const CommentsSection = ({ storyId }) => {
                               </AnimatePresence>
                             </div>
                           </div>
-                          <p className="text-gray-700 text-sm">{reply.text}</p>
+                          <p className="text-[var(--text-color)] text-sm">{reply.text}</p>
                         </div>
                       </motion.div>
                     ))}

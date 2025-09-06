@@ -8,17 +8,16 @@ import CommentsSection from "./CommentsSelection";
 import avatarDef from "../assets/avatar-people-user-svgrepo-com.svg";
 import { followUser, unfollowUser } from "../features/auth/channelSlice";
 import { message } from "antd";
-import parse from "html-react-parser"
+import parse from "html-react-parser";
 
 const Post = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const { item: story, status, error } = useSelector((state) => state.post);
   const user = useSelector((state) => state.auth.user);
-const isFollowing = useSelector((state) =>
-  story?.authorId ? state.channel.following.includes(story.authorId) : false
-);
-
+  const isFollowing = useSelector((state) =>
+    story?.authorId ? state.channel.following.includes(story.authorId) : false
+  );
 
   useEffect(() => {
     dispatch(fetchPostById(id));
@@ -58,9 +57,7 @@ const isFollowing = useSelector((state) =>
   return (
     <div className="max-w-3xl mx-auto p-4 pt-24">
       {story.title && (
-        <h1 className="text-3xl font-bold mb-2">
-          {story.title}
-        </h1>
+        <h1 className="text-3xl font-bold mb-2">{story.title}</h1>
       )}
 
       <div className="items-center flex mb-3 justify-between">
@@ -75,14 +72,18 @@ const isFollowing = useSelector((state) =>
           />
           <span>{story.authorName}</span>
         </Link>
-        <button
-          onClick={isFollowing ? handleUnfollow : handleFollow}
-          className={`rounded-3xl border-1 border-black   px-3 py-2 hover:bg-black hover:!text-white transition-colors ${
-            isFollowing ? "bg-black text-[var(--text-color)]" : "bg-[var(--color-bt)]"
-          }`}
-        >
-          {isFollowing ? "Отписаться" : "Подписаться"}
-        </button>
+        {user && story.authorId !== user.uid && (
+          <button
+            onClick={isFollowing ? handleUnfollow : handleFollow}
+            className={`rounded-3xl border-1 border-black px-3 py-2 hover:bg-black hover:!text-white transition-colors ${
+              isFollowing
+                ? "bg-black text-[var(--text-color)]"
+                : "bg-[var(--color-bt)]"
+            }`}
+          >
+            {isFollowing ? "Отписаться" : "Подписаться"}
+          </button>
+        )}
       </div>
 
       <p className="text-sm text-gray-500 mb-6">

@@ -12,12 +12,13 @@
 
 /* Тёмная тема */
 .dark {
-  --bg-header: #313131;
+  --bg-header: #3a434d;
+  /* --bg-header: #313131; */
   --bg-color: #313131;
   --text-color: #d2d0d0;
   --color-bt: #1b1b1b;
   --bg-input: #9c9b9b11;
   --primary: #040404;
-  --primary-hover: #acc3db;
+  --primary-hover: #3a434d;
   --error: #f87171;
 }

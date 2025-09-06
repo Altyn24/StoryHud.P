@@ -6,6 +6,7 @@ import NavBar from "../page/NavBar";
 import avatarDef from "../assets/avatar-people-user-svgrepo-com.svg";
 import { setSearchQuery } from "../features/searchSlice";
 import SearchResult from "../page/Search";
+import { toggleTheme } from "../features/stories/themeSlice";
 import { motion } from "framer-motion";
 
 function Header({ onMenuToggle }) {
@@ -15,7 +16,9 @@ function Header({ onMenuToggle }) {
   const dispatch = useDispatch();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(false);
+  const [closeSideBar, setCloseSideBar] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const darkMode = useSelector((state) => state.theme.darkMode);
   const location = useLocation();
 
   const handleLogout = () => {
@@ -94,11 +97,12 @@ function Header({ onMenuToggle }) {
               Write<span className="text-blue-500">Side</span>
             </Link>
           </div>
+
           <div className="flex items-center">
             <div className="relative flex items-center">
               <motion.div
-              initial={{opacity: 0, x: 30}}
-              animate={{opacity: 1, x: 0}}
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
                 className={`w-40 sm:w-64 ${
                   searchOpen ? "block" : "hidden sm:block"
                 }`}
@@ -148,7 +152,7 @@ function Header({ onMenuToggle }) {
             ) : (
               <Link
                 to="/signup"
-                className="!text-white mx-3 bg-black rounded-3xl px-3 py-1 text-sm sm:text-base"
+                className="!text-white mx-3 bg-black rounded-3xl px-2 py-1 text-sm sm:text-base"
               >
                 Регистрация
               </Link>
@@ -156,6 +160,7 @@ function Header({ onMenuToggle }) {
           </div>
         </header>
       </div>
+      {/* SIDEBAR (справа) */}
       <div
         className={`fixed inset-0 z-40 transition-opacity duration-300 ${
           sidebarOpen
@@ -201,9 +206,52 @@ function Header({ onMenuToggle }) {
           <Link
             to="/profileset"
             className="rounded-xl p-2 hover:bg-[var(--primary-hover)] hover:text-[var(--text-color)] transition-all text-sm sm:text-base text-[var(--text-color)]"
+            onClick={() => setSidebarOpen(false)}
           >
             Настройки профиля
           </Link>
+
+          <div className="flex items-center justify-between transition-colors duration-300">
+            <label className="flex items-center gap-2 cursor-pointer text-[var(--text-color)] hover:bg-[var(--primary-hover)] transition-colors rounded-xl p-2">
+              <span className="">Сменить тему</span>
+              <button
+                onClick={() => dispatch(toggleTheme())}
+                className="px-2 py-2 outline-none rounded hover:opacity-80 transition-colors duration-300"
+              >
+                {darkMode ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="size-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="size-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"
+                    />
+                  </svg>
+                )}
+              </button>
+            </label>
+          </div>
           <button
             onClick={handleLogout}
             className="text-left text-[var(--error)] rounded-xl p-2 hover:bg-[var(--primary-hover)] hover:text-[var(--text-color)] transition-all text-sm sm:text-base"

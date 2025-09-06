@@ -9,13 +9,19 @@ const ResetPassword = () => {
 
   const handleReset = async (e) => {
     e.preventDefault();
-
     try {
       await sendPasswordResetEmail(auth, email);
       message.success("Письмо для сброса отправлено!");
     } catch (error) {
-      console.error(error);
-      message.error("Ошибка при отправке письма");
+      console.error(error.code);
+
+      if (error.code === "auth/user-not-found") {
+        message.error("Пользователь с таким email не найден");
+      } else if (error.code === "auth/invalid-email") {
+        message.error("Некорректный email");
+      } else {
+        message.error("Ошибка при отправке письма");
+      }
     }
   };
 

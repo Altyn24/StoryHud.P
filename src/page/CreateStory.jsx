@@ -210,7 +210,8 @@ export default function CreateStory() {
               placeholder="Название"
               value={content.title}
               onChange={handleTitleChange}
-              className="w-full !text-2xl font-semibold text-gray-900 outline-none mb-4 placeholder-gray-400"
+              className="w-full !text-2xl font-semibold text-gray-900 outline-none mb-4 placeholder-gray-400 
+               break-words pr-12"
             />
           )}
 

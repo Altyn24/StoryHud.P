@@ -124,7 +124,7 @@ export default function Profile() {
         <div>
           <h2 className="text-xl font-semibold mb-4">Мои публикации</h2>
           {posts.length === 0 ? (
-            <div className="bg-[var(bg-color)] p-6 rounded-md text-center text-gray-600">
+            <div className="bg-[var(bg-color)] p-6 rounded-md text-center text-[var(--text-color)]">
               <p>У вас пока нет публикаций.</p>
               <button
                 onClick={() => navigate("/create")}
@@ -162,7 +162,7 @@ export default function Profile() {
                       {menuVisible === story.id && (
                         <div
                           ref={(el) => (menuRefs.current[story.id] = el)}
-                          className="absolute top-10 right-4 bg-white shadow-lg rounded-md p-2 z-10"
+                          className="absolute top-10 right-4 bg-[var(--bg-color)] shadow-lg rounded-md p-2 z-10"
                         >
                           <Button
                             type="link"

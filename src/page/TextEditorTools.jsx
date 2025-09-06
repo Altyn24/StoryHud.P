@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 export default function TextEditorTools({
@@ -9,8 +9,26 @@ export default function TextEditorTools({
   hasTitle,
 }) {
   const fileInputRef = useRef();
+  const panelRef = useRef(null);
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [link, setLink] = useState("");
+
+  // Закрытие при клике вне панели
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (panelRef.current && !panelRef.current.contains(e.target)) {
+        setShowTools(false);
+      }
+    }
+
+    if (showTools) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showTools, setShowTools]);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -34,38 +52,17 @@ export default function TextEditorTools({
 
   return (
     <div className="z-10 absolute right-10 top-1">
-      {/* Кнопка "+"
-      <button
-        type="button"
-        onClick={() => setShowTools(!showTools)}
-        className="p-2 rounded-full bg-gray-200 hover:bg-gray-300"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="size-6"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M12 4.5v15m7.5-7.5h-15"
-          />
-        </svg>
-      </button> */}
-
       {/* Панель инструментов */}
       <AnimatePresence>
         {showTools && (
           <motion.div
+            ref={panelRef} // 👉 отслеживаем панель
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -10 }}
-            className=" items-center bg-[var(--bg-input)] border rounded-xl shadow-md px-4 py-2 flex gap-2 z-10 sm:w-[100]"
+            className="items-center backdrop-blur-2xl bg-[var(--bg-input)] border rounded-xl shadow-md px-4 py-2 flex gap-2 z-10 sm:w-[100]"
           >
-            {/* Переключатель заголовка */}
+            {/* Кнопки (оставил твои) */}
             <button
               type="button"
               onClick={toggleTitle}
@@ -74,7 +71,6 @@ export default function TextEditorTools({
               {hasTitle ? "Без название" : "Название"}
             </button>
 
-            {/* Загрузка изображения */}
             <label htmlFor="imageStory">
               <input
                 type="file"
@@ -102,107 +98,21 @@ export default function TextEditorTools({
               </span>
             </label>
 
-            {/* Жирный */}
             <button
               type="button"
               onClick={() => applyFormat("bold")}
               className="text-gray-600 hover:text-black font-bold"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="size-6"
-              >
-                <path
-                  strokeLinejoin="round"
-                  d="M6.75 3.744h-.753v8.25h7.125a4.125 4.125 0 0 0 0-8.25H6.75Zm0 0v.38m0 16.122h6.747a4.5 4.5 0 0 0 0-9.001h-7.5v9h.753Zm0 0v-.37m0-15.751h6a3.75 3.75 0 1 1 0 7.5h-6m0-7.5v7.5m0 0v8.25m0-8.25h6.375a4.125 4.125 0 0 1 0 8.25H6.75m.747-15.38h4.875a3.375 3.375 0 0 1 0 6.75H7.497v-6.75Zm0 7.5h5.25a3.75 3.75 0 0 1 0 7.5h-5.25v-7.5Z"
-                />
-              </svg>
+              B
             </button>
 
-            {/* Курсив */}
             <button
               type="button"
               onClick={() => applyFormat("italic")}
               className="text-gray-600 hover:text-black italic"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="size-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M5.248 20.246H9.05m0 0h3.696m-3.696 0 5.893-16.502m0 0h-3.697m3.697 0h3.803"
-                />
-              </svg>
+              I
             </button>
-
-            {/* Заголовок */}
-            <button
-              type="button"
-              onClick={() => applyFormat("formatBlock", "h2")}
-              className="text-gray-600 hover:text-black font-semibold"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-  <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 19.5H16.5v-1.609a2.25 2.25 0 0 1 1.244-2.012l2.89-1.445c.651-.326 1.116-.955 1.116-1.683 0-.498-.04-.987-.118-1.463-.135-.825-.835-1.422-1.668-1.489a15.202 15.202 0 0 0-3.464.12M2.243 4.492v7.5m0 0v7.502m0-7.501h10.5m0-7.5v7.5m0 0v7.501" />
-</svg>
-
-            </button>
-
-            {/* Разделитель */}
-            {/* <button
-              type="button"
-              onClick={() => applyFormat("insertHorizontalRule")}
-              className="text-gray-600 hover:text-black"
-            >
-              ―
-            </button> */}
-
-            {/* Ссылка */}
-            <div className="relative">
-              {/* <button
-                type="button"
-                onClick={() => setShowLinkInput(!showLinkInput)}
-                className="text-gray-600 hover:text-black underline"
-              >
-                🔗
-              </button> */}
-
-              <AnimatePresence>
-                {showLinkInput && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: -5 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: -5 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute left-8 top-0 bg-white border rounded-lg shadow-md p-2 flex items-center gap-2"
-                  >
-                    <input
-                      type="text"
-                      value={link}
-                      onChange={(e) => setLink(e.target.value)}
-                      placeholder="Вставьте ссылку..."
-                      className="border px-2 py-1 rounded text-sm outline-none"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleInsertLink}
-                      className="px-2 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
-                    >
-                      OK
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
           </motion.div>
         )}
       </AnimatePresence>

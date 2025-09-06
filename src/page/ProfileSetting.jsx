@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateUserProfile } from "../features/auth/updateProfileTC";
 import { useNavigate } from "react-router-dom";
 import avatarDef from "../assets/avatar-people-user-svgrepo-com.svg";
-import { toggleTheme } from "../features/stories/themeSlice";
+// import { toggleTheme } from "../features/stories/themeSlice";
 
 const ProfileSetting = () => {
   const user = useSelector((state) => state.auth.user);
@@ -11,7 +11,7 @@ const ProfileSetting = () => {
   const [avatar, setAvatar] = useState(null);
   const [preview, setPreview] = useState(user?.photoURL || avatarDef);
   const [error, setError] = useState("");
-  const darkMode = useSelector((state) => state.theme.darkMode);
+  // const darkMode = useSelector((state) => state.theme.darkMode);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -64,7 +64,7 @@ const ProfileSetting = () => {
           <input
             type="text"
             placeholder="Имя"
-            className="w-full shadow p-3 bg-card text-text placeholder-gray-400 transition-colors duration-300"
+            className="w-full shadow p-3 bg-card text-text outline-none placeholder-gray-400 transition-colors duration-300"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
@@ -87,7 +87,7 @@ const ProfileSetting = () => {
           {error && <p className="text-error font-medium mt-2">{error}</p>}
         </div>
       </form>
-
+{/* 
       <div className="mt-8">
         <label className="flex items-center justify-between bg-card p-3 rounded shadow transition-colors duration-300">
           <span className="text-lg">Тёмная тема</span>
@@ -98,7 +98,7 @@ const ProfileSetting = () => {
             {darkMode ? "Отключить" : "Включить"}
           </button>
         </label>
-      </div>
+      </div> */}
     </div>
   );
 };

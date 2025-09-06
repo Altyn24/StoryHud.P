@@ -1,6 +1,6 @@
 import { NavLink, useLocation, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { fetchFollowingDetails } from "../features/auth/channelSlice";
 import avatarDef from "../assets/avatar-people-user-svgrepo-com.svg";
 
@@ -53,7 +53,7 @@ const SidebarNav = ({ isOpen }) => {
     <>
       {/* DESKTOP NAV (слева) */}
       <div
-        className={`fixed top-[64px] hidden sm:block left-0 h-full bg-[var(--bg-color)] dark:bg-[var(--bg-color)] shadow-md z-40 transform transition-transform duration-300 ${
+        className={`fixed top-[64px] w-60 hidden sm:block left-0 h-full bg-[var(--bg-color)] dark:bg-[var(--bg-color)] shadow-md z-40 transform transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -63,9 +63,9 @@ const SidebarNav = ({ isOpen }) => {
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `text-lg font-medium px-2 py-1 hover:bg-[#acc3db] hover:!text-white rounded-2xl transition-all ${
+                `text-lg font-medium px-2 py-1 hover:bg-[var(--bg-header)] hover:!text-white rounded-2xl transition-all ${
                   isActive
-                    ? "!text-white rounded-2xl transition-all bg-[#acc3db]"
+                    ? "!text-white rounded-2xl transition-all bg-[var(--bg-header)]"
                     : "text-[var(--text-color)]"
                 }`
               }
@@ -88,7 +88,7 @@ const SidebarNav = ({ isOpen }) => {
               <li key={ch.id}>
                 <Link
                   to={`/channel/${ch.id}`}
-                  className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded"
+                  className="flex items-center gap-2 hover:bg-[var(--bg-header)] transition-colors p-2 rounded"
                 >
                   <img
                     src={ch.avatar || avatarDef}

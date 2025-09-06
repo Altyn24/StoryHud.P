@@ -11,8 +11,8 @@ const SignUp = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    setState(true);
     e.preventDefault();
+    setState(true);
     if (password.length < 6) {
       alert("Пароль должен быть больше 6 символов");
        setState(false);

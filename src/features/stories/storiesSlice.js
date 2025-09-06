@@ -137,5 +137,5 @@ const storiesSlice = createSlice({
       });
   },
 });
-export const { updateUserPosts, addStory } = storiesSlice.actions; // Экспортируем новый редукер
+export const { updateUserPosts, addStory } = storiesSlice.actions;
 export default storiesSlice.reducer;

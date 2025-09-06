@@ -1,22 +1,19 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import avatarDef from "../assets/avatar-people-user-svgrepo-com.svg";
 import { getImage } from "../components/getImage.js";
 import { useSelector } from "react-redux";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, lazy, Suspense } from "react";
 import { collection, query, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
-import { lazy, Suspense } from "react";
 import ReactHtmlParser from "html-react-parser";
 
 const LikeButton = lazy(() => import("./LikeButton.jsx"));
 
 const StoryCards = ({ story }) => {
+  const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
   const [commentCount, setCommentCount] = useState(0);
-
   const hasContent = story.title || story.text;
-  const previewText = story.text || "Без содержания";
-
   const fetchCommentCount = useCallback(async () => {
     try {
       const q = query(collection(db, "stories", story.id, "comments"));
@@ -32,15 +29,26 @@ const StoryCards = ({ story }) => {
     fetchCommentCount();
   }, [fetchCommentCount]);
 
+  // функция для очистки HTML от тегов
+const stripHtml = (html) => {
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  return doc.body.textContent || "";
+};
+
+const previewText = stripHtml(story.text || "Без содержания");
+
+
   return (
     <div
-      className="bg-[var(--bg-color)] border-b border-gray-300 dark:border-gray-600 p-6 transition-colors"
+      className="bg-[var(--bg-color)] border-b border-gray-300 dark:border-gray-600 p-6 transition-colors cursor-pointer"
       style={{ fontFamily: '"Roboto Mono", monospace' }}
+      onClick={() => navigate(`/post/${story.id}`)}
     >
       <div className="flex items-center justify-between mb-4">
         <Link
           to={`/channel/${story.authorId}`}
           className="flex items-center gap-3"
+          onClick={(e) => e.stopPropagation()}
         >
           <img
             src={user?.photoURL || story.authorPhoto || avatarDef}
@@ -53,56 +61,56 @@ const StoryCards = ({ story }) => {
         </Link>
       </div>
 
-      <Link to={`/post/${story.id}`} className="block">
-        {hasContent ? (
-          <div className="flex flex-col sm:flex-row gap-6">
-            <div className="flex-1">
-              {story.title && (
-                <h3 className="text-2xl font-semibold text-[var(--text-color)] mb-2 leading-tight">
-                  {story.title}
-                </h3>
-              )}
+      {/* Контент поста */}
+      {hasContent ? (
+        <div className="flex flex-col sm:flex-row gap-6">
+          <div className="flex-1">
+            {story.title && (
+              <h3 className="text-2xl font-semibold text-[var(--text-color)] mb-2 leading-tight">
+                {story.title}
+              </h3>
+            )}
 
-              {story.text && (
-                <p className="text-[var(--text-color)] text-base line-clamp-3 opacity-80">
-                  {ReactHtmlParser(previewText)}
-                </p>
-              )}
-            </div>
-            {story.previewImage && (
-              <div className="w-full sm:w-[200px] h-auto">
-                <img
-                  className="rounded-lg w-full h-auto object-cover"
-                  src={getImage(story.previewImage)}
-                  alt="cover"
-                />
-              </div>
+            {story.text && (
+              <p className="text-[var(--text-color)] text-base line-clamp-3 opacity-80">
+                {ReactHtmlParser(previewText)}
+              </p>
             )}
           </div>
-        ) : (
-          story.previewImage && (
-            <div className="w-full">
+          {story.previewImage && (
+            <div className="w-full sm:w-[200px] h-auto">
               <img
                 className="rounded-lg w-full h-auto object-cover"
                 src={getImage(story.previewImage)}
-                alt="full-cover"
+                alt="cover"
               />
             </div>
-          )
-        )}
-      </Link>
+          )}
+        </div>
+      ) : (
+        story.previewImage && (
+          <div className="w-full">
+            <img
+              className="rounded-lg w-full h-auto object-cover"
+              src={getImage(story.previewImage)}
+              alt="full-cover"
+            />
+          </div>
+        )
+      )}
 
-      <div className="mt-4 flex items-center gap-6 text-sm text-[var(--text-color)] justify-end opacity-70">
-        <Suspense
-          fallback={
-            <div className="text-sm text-[var(--text-color)] opacity-50">
-              Загрузка...
-            </div>
-          }
-        >
+      {/* Лайки и комменты */}
+      <div
+        className="mt-2 flex items-center gap-6 text-sm text-[var(--text-color)] justify-end opacity-70"
+        onClick={(e) => e.stopPropagation()} // отключаем переход при клике на иконки
+      >
+        <Suspense fallback={<div className="opacity-50">...</div>}>
           <LikeButton storyId={story.id} />
         </Suspense>
-        <div className="flex items-center gap-1">
+        <div
+          className="flex items-center gap-1 cursor-pointer"
+          onClick={() => navigate(`/post/${story.id}`)}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

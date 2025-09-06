@@ -59,19 +59,63 @@ export const fetchOrCreateChannel = createAsyncThunk(
     if (docSnap.exists()) {
       const data = docSnap.data();
       return {
+        id: docSnap.id,
         ...data,
         createdAt: convertTimestamp(data.createdAt),
       };
     } else {
-      const user = state.auth.user;
-      const newChannel = {
-        title: user?.name ? `${user.name}` : "Новый канал",
-        description: "",
-        createdAt: new Date().toISOString(),
-        ownerId: userId,
-      };
+      // ⚡ Берём профиль из users/{userId}
+      const userRef = doc(db, "users", userId);
+      const userSnap = await getDoc(userRef);
+
+      let newChannel;
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        newChannel = {
+          title: userData.name || "Новый канал",
+          avatar: userData.photoURL || null,
+          description: "",
+          createdAt: new Date().toISOString(),
+          ownerId: userId,
+        };
+      } else {
+        newChannel = {
+          title: "Новый канал",
+          description: "",
+          createdAt: new Date().toISOString(),
+          ownerId: userId,
+        };
+      }
+
       await setDoc(docRef, newChannel);
-      return newChannel;
+      return { id: userId, ...newChannel };
+    }
+  }
+);
+
+// 🔥 Обновляем followUser
+export const followUser = createAsyncThunk(
+  "channel/followUser",
+  async ({ followerId, followedId }, { rejectWithValue, dispatch }) => {
+    try {
+      const followingRef = doc(
+        db,
+        "users",
+        followerId,
+        "following",
+        followedId
+      );
+      const followerRef = doc(db, "users", followedId, "followers", followerId);
+
+      await setDoc(followingRef, { followedId, followedAt: new Date() });
+      await setDoc(followerRef, { followerId, followedAt: new Date() });
+
+      // ⚡ Сразу тянем канал подписанного пользователя
+      const channel = await dispatch(fetchOrCreateChannel(followedId)).unwrap();
+
+      return { followedId, channel };
+    } catch (error) {
+      return rejectWithValue(error.message);
     }
   }
 );
@@ -99,27 +143,6 @@ export const fetchUserPosts = createAsyncThunk(
       };
     });
     return posts;
-  }
-);
-
-export const followUser = createAsyncThunk(
-  "channel/followUser",
-  async ({ followerId, followedId }, { rejectWithValue }) => {
-    try {
-      const followingRef = doc(
-        db,
-        "users",
-        followerId,
-        "following",
-        followedId
-      );
-      const followerRef = doc(db, "users", followedId, "followers", followerId);
-      await setDoc(followingRef, { followedId, followedAt: new Date() });
-      await setDoc(followerRef, { followerId, followedAt: new Date() });
-      return { followedId };
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
   }
 );
 
@@ -209,7 +232,11 @@ const channelSlice = createSlice({
         state.loading = false;
       })
       .addCase(followUser.fulfilled, (state, action) => {
-        state.following = [...state.following, action.payload.followedId];
+        const { followedId, channel } = action.payload;
+        if (!state.following.includes(followedId)) {
+          state.following.push(followedId);
+          state.followingDetails.push(channel);
+        }
       })
       .addCase(unfollowUser.fulfilled, (state, action) => {
         state.following = state.following.filter(

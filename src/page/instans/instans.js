@@ -1,5 +1,5 @@
 import axios from "axios";
 
-export const instanse = axios.create({ baseURL: "https://edccbc035d8b.ngrok-free.app", headers: {
+export const instanse = axios.create({ baseURL: import.meta.env["VITE_BASE_URL"], headers: {
     "ngrok-skip-browser-warning": true,
 } });

@@ -2,46 +2,59 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../../features/auth/loginTC";
 import { Link, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [state, setState] = useState(false)
+  const [state, setState] = useState(false);
+  const [error, setError] = useState(""); // 👈 стейт для ошибки
 
   const handleSubmit = async (e) => {
-    setState(true)
     e.preventDefault();
+    setState(true);
+    setError(""); // очищаем ошибки при новой попытке
+
     if (!email || !password) {
-      alert("Пожалуйста, заполните все поля");
-      return;
-    }
-    if (password.length < 6) {
-      alert("Пароль слишком короткий");
+      setError("Пожалуйста, заполните все поля");
+      setState(false);
       return;
     }
 
-    const resultAction = await dispatch(loginUser({ email, password })).unwrap();
-    if (resultAction) {
-      const user = resultAction;
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          uid: user.uid,
-          name: user.displayName || "Без имени",
-          email: user.email,
-        })
-      );
-      navigate("/profile");
+    try {
+      const resultAction = await dispatch(loginUser({ email, password })).unwrap();
+      if (resultAction) {
+        const user = resultAction;
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            uid: user.uid,
+            name: user.displayName || "Без имени",
+            email: user.email,
+          })
+        );
+        navigate("/profile");
+      }
+    } catch (err) {
+      // 👇 ловим ошибки Firebase
+      if (err.includes("wrong-password")) {
+        setError("Неверный пароль");
+      } else if (err.includes("user-not-found")) {
+        setError("Пользователь не найден");
+      } else {
+        setError("Ошибка входа. Попробуйте снова");
+      }
+    } finally {
+      setState(false);
     }
-    setState(false)
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-white">
+    <div className="flex justify-center items-center h-screen bg-[var(--bg-color)]">
       <div className="max-w-md w-full p-8 shadow-md rounded">
-        <h1 className="text-3xl font-bold text-center mb-4 text-gray-800">
+        <h1 className="text-3xl font-bold text-center mb-4 text-[var(--text-color)]">
           WriteSide
         </h1>
         <p className="text-center text-gray-600 mb-6">Войдите в аккаунт</p>
@@ -50,7 +63,7 @@ function Login() {
             <input
               type="email"
               placeholder="Email"
-              className="w-full p-3 border-b-1 outline-none"
+              className="w-full p-3 border-b outline-none"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -58,12 +71,27 @@ function Login() {
             <input
               type="password"
               placeholder="Пароль"
-              className="w-full p-3 border-b-1 outline-none"
+              className="w-full p-3 border-b outline-none"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
+
+          {/* 👇 Ошибки через motion */}
+          <AnimatePresence>
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="mb-4 text-center bg-[var(--error)] text-white p-2 rounded"
+              >
+                {error}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <button
             type="submit"
             className="w-full !text-white bg-green-500 p-2 rounded-md"

@@ -9,8 +9,14 @@ export const createUser = createAsyncThunk(
   "auth/createUser",
   async ({ email, password }, { dispatch, rejectWithValue }) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
+
+      // сохраняем пользователя в коллекцию "users"
       await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
         email: user.email,
@@ -19,17 +25,19 @@ export const createUser = createAsyncThunk(
         createdAt: serverTimestamp(),
       });
 
-      dispatch(
-        setUser({
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName || "",
-          name: user.displayName || "",
-          photoURL: user.photoURL || "",
-        })
-      );
+      const plainUser = {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName || "",
+        name: user.displayName || "",
+        photoURL: user.photoURL || "",
+      };
+
+      dispatch(setUser(plainUser));
       message.success("Регистрация прошла успешно!");
-      return user;
+
+      // ✅ возвращаем plain object вместо _UserImpl
+      return plainUser;
     } catch (error) {
       console.error("Ошибка регистрации:", error.message);
       message.error(`Ошибка: ${error.message}`);
